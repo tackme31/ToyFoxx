@@ -66,4 +66,5 @@ target_link_libraries(toyfoxx
         Qt6::Quick
         Qt6::QuickControls2
         Qt6::Multimedia
+        shell32
 )
