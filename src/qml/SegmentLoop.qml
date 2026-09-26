@@ -11,6 +11,21 @@ QtObject {
     readonly property bool hasStart: startMs >= 0
     readonly property bool active: endMs >= 0
 
+    function advance() {
+        const position = player.position;
+        if (active)
+            clear();
+        else if (!hasStart)
+            startMs = position;
+        else if (startMs < position)
+            endMs = position;
+    }
+
+    function clear() {
+        startMs = -1;
+        endMs = -1;
+    }
+
     // Resolution is bounded by the position notify rate; do not poll to tighten it.
     property Connections positionWatcher: Connections {
         target: segmentLoop.player
@@ -37,20 +52,5 @@ QtObject {
                 segmentLoop.player.play();
             }
         }
-    }
-
-    function advance() {
-        const position = player.position;
-        if (active)
-            clear();
-        else if (!hasStart)
-            startMs = position;
-        else if (startMs < position)
-            endMs = position;
-    }
-
-    function clear() {
-        startMs = -1;
-        endMs = -1;
     }
 }

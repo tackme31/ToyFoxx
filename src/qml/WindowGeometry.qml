@@ -9,6 +9,22 @@ QtObject {
     required property Window window
     property bool restored: false
 
+    function restore() {
+        if (store.width > 0 && store.height > 0) {
+            const fitted = ScreenGeometry.fitToAvailableScreens(Qt.rect(store.x, store.y, store.width, store.height));
+            window.x = fitted.x;
+            window.y = fitted.y;
+            window.width = fitted.width;
+            window.height = fitted.height;
+        }
+        restored = true;
+    }
+
+    function scheduleSave() {
+        if (restored)
+            saveTimer.restart();
+    }
+
     // Plain integers rather than a rect, which QSettings would store as an opaque @Variant blob
     // in the INI file.
     property Settings settings: Settings {
@@ -56,21 +72,5 @@ QtObject {
         function onHeightChanged() {
             keeper.scheduleSave();
         }
-    }
-
-    function restore() {
-        if (store.width > 0 && store.height > 0) {
-            const fitted = ScreenGeometry.fitToAvailableScreens(Qt.rect(store.x, store.y, store.width, store.height));
-            window.x = fitted.x;
-            window.y = fitted.y;
-            window.width = fitted.width;
-            window.height = fitted.height;
-        }
-        restored = true;
-    }
-
-    function scheduleSave() {
-        if (restored)
-            saveTimer.restart();
     }
 }
