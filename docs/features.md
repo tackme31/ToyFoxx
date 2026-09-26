@@ -38,7 +38,7 @@ ToyBoxx の挙動は「仕様の出典」として扱う。バグや WPF 固有�
 | F-18 | 通知トースト（Snackbar 相当） | P2 | 済 |
 | F-19 | シークバーのサムネイルプレビュー | P3 | 済（方式は下記。当初案から変更） |
 | F-20 | 設定の永続化 | P3 | 済 |
-| F-21 | テーマ（Dark / Light / HighContrast） | P3 | 未 |
+| F-21 | テーマ（Dark / Light / HighContrast） | — | 対応しない（ダーク固定。下記） |
 | F-22 | 再生中のスリープ抑止（ToyBoxx は全画面中） | P3 | 済 |
 | F-23 | カスタムタイトルバー（映像をタイトルバーの下まで広げる） | P2 | 済（既知の粗さは下記） |
 | F-24 | エラー表示 | P3 | 済 |
@@ -380,10 +380,10 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 - ToyBoxx は `appsettings.json` の `ApplicationTheme` で `Dark` / `Light` / `HighContrast` を選び、
   WPF-UI の `ApplicationThemeManager` に適用する。UI からは切り替えられない。
   `appsettings.user.json` による上書きも可。
-- ToyFoxx では Qt Quick Controls の **FluentWinUI3** スタイルを使い、
-  Dark / Light はスタイルの配色指定 + 自前のテーマシングルトンで切り替える。
-  HighContrast は優先度を下げてよい。
-- 設定ファイルの形式は JSON に縛られない（`QSettings` で十分）。
+- ToyFoxx は**対応しない**（2026-09-27 に決定）。テーマはダーク固定で、切り替えの設定も
+  自前のテーマシングルトンも作らない。Light / HighContrast も実装しない。
+- 未実装: ダークの強制。現状は FluentWinUI3 スタイルが OS の配色設定に従うため、OS がライトだと
+  ライトで表示される。
 
 ### F-22 全画面中のスリープ抑止
 
@@ -499,13 +499,11 @@ ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から�
 - コマ送りの精度をどこまで追い込むか（`position` 加算の近似で妥協するか、`QVideoSink` を使って
   フレーム単位で制御するか）。後者は Performance rules と衝突しうるので慎重に。
 - `CanPause` / `IsSeeking` / `IsChanging` に相当する状態を QML 側でどこまで作り込むか。
-- HighContrast テーマを実装するか。
 
 ## 5. 人間側の作業待ち
 
 コードでは解決できず、判断か実機作業が必要なもの。
 
-- **LICENSE と著者表記** — ToyBoxx は MIT / Takumi Yamada。同じでよいかの確認待ち。
 - **4K テスト動画と計測ベースライン** — `CLAUDE.md` の Baseline に挙げた項目を、置き換え前の
   ToyBoxx で同じ動画・同じ PC について記録しておく必要がある。これが無いと改善を判断できない。
   解像度 / fps / コーデック / ビット深度も控えること。
@@ -561,4 +559,4 @@ ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から�
 - 自動非表示は、Qt Quick が静止カーソル位置で合成ホバーを毎フレーム配り直すため、`HoverHandler.point` の
   変化ではなく 1px 以上の実移動だけを操作とみなしている（`WindowChrome.qml`）。
 - ファイルダイアログは削除した。必要になれば `Ctrl`+`O` のショートカットだけで復活させる案がある（未依頼）。
-- 次の着手候補: **4K 実測** → F-01 の残り → F-21。
+- 次の着手候補: **4K 実測** → F-01 の残り。
