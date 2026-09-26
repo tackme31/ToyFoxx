@@ -16,12 +16,15 @@ Button {
     focusPolicy: Qt.NoFocus
     text: qsTr("x %1").arg(player.playbackRate)
 
-    onClicked: ratePopup.open()
+    onClicked: ratePopup.visible ? ratePopup.close() : ratePopup.open()
 
     Popup {
         id: ratePopup
 
         y: -implicitHeight - 4
+        // Pressing the button itself must not close the popup, or the click that follows would
+        // reopen it; the button toggles it instead.
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
         width: speedButton.width + leftPadding + rightPadding
         padding: 4
 
