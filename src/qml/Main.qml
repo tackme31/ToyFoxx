@@ -62,6 +62,12 @@ ApplicationWindow {
         onErrorOccurred: (error, errorString) => console.warn("Media failed:", error, errorString)
     }
 
+    SegmentLoop {
+        id: segmentLoop
+
+        player: player
+    }
+
     VideoOutput {
         id: videoOutput
 
@@ -122,6 +128,7 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
         player: player
         audioOutput: audioOutput
+        segmentLoop: segmentLoop
         fullScreen: root.visibility === Window.FullScreen
         // Faded rather than hidden outright; visible drops only once the fade-out has finished,
         // so the invisible panel does not keep catching clicks.

@@ -8,6 +8,7 @@ Rectangle {
 
     required property MediaPlayer player
     required property AudioOutput audioOutput
+    required property SegmentLoop segmentLoop
     property bool fullScreen: false
 
     // True while auto-hiding the panel would get in the user's way.
@@ -56,6 +57,7 @@ Rectangle {
             Layout.topMargin: 10
             Layout.preferredHeight: 20
             player: panel.player
+            segmentLoop: panel.segmentLoop
         }
 
         RowLayout {
@@ -116,6 +118,14 @@ Rectangle {
                 focusPolicy: Qt.NoFocus
                 text: qsTr("Loop")
                 onToggled: panel.player.loops = checked ? MediaPlayer.Infinite : 1
+            }
+
+            Button {
+                enabled: panel.isOpen
+                checked: panel.segmentLoop.active
+                focusPolicy: Qt.NoFocus
+                text: panel.segmentLoop.hasStart && !panel.segmentLoop.active ? qsTr("A-B (A set)") : qsTr("A-B")
+                onClicked: panel.segmentLoop.advance()
             }
 
             Button {

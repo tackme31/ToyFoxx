@@ -6,6 +6,12 @@ Slider {
     id: seekBar
 
     required property MediaPlayer player
+    required property SegmentLoop segmentLoop
+
+    // Centre of the handle at a given media position, so markers line up with it.
+    function markerX(ms: real): real {
+        return leftPadding + handle.width / 2 + (ms - from) / (to - from) * (availableWidth - handle.width) - 1;
+    }
 
     from: 0
     // Live streams report a duration of 0; keep the range non-empty so the slider stays sane.
@@ -21,5 +27,21 @@ Slider {
         seekBar.value: seekBar.player.position
         when: !seekBar.pressed
         restoreMode: Binding.RestoreNone
+    }
+
+    Rectangle {
+        x: seekBar.markerX(seekBar.segmentLoop.startMs)
+        width: 2
+        height: seekBar.height
+        visible: seekBar.segmentLoop.hasStart
+        color: "white"
+    }
+
+    Rectangle {
+        x: seekBar.markerX(seekBar.segmentLoop.endMs)
+        width: 2
+        height: seekBar.height
+        visible: seekBar.segmentLoop.active
+        color: "white"
     }
 }
