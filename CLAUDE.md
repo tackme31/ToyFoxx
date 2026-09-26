@@ -45,6 +45,9 @@ With the Ninja generator, CMake does not set up the MSVC environment itself. Run
 with Qt's `Tools/Ninja` on `PATH`.
 
 ```powershell
+# QWindowKit is a submodule with nested submodules of its own
+git submodule update --init --recursive
+
 # Configure (qt-cmake, from the Qt bin directory, selects the matching toolchain)
 qt-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
@@ -57,6 +60,10 @@ cmake --build build
 # Deployable output
 windeployqt --qmldir ./src/qml ./build/ToyFoxx.exe
 ```
+
+Once `windeployqt` has been run into `build/`, the executable resolves QML imports only from `build/qml`.
+After adding a new QML import (as happened with `QtCore`), rerun it, or startup fails with "module is not
+installed".
 
 **Always measure performance in a Release or RelWithDebInfo build.** Debug builds of Qt Quick and the QML
 engine are not representative.
@@ -92,6 +99,7 @@ src/
     ControllerPanel.qml
     SeekBar.qml
 resources/             # icons, fonts
+third_party/qwindowkit # submodule, pinned to a release tag: frameless window with native frame behaviour
 docs/
 tests/                 # Qt Quick Test
 ```
