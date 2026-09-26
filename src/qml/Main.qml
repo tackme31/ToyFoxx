@@ -92,6 +92,8 @@ ApplicationWindow {
 
     // Declared on the content item, so it stays hovered over the panel's buttons too.
     HoverHandler {
+        id: windowHover
+
         cursorShape: root.controlsShown ? Qt.ArrowCursor : Qt.BlankCursor
         // point is also reset when the cursor leaves; that must not count as activity.
         onPointChanged: {
@@ -127,6 +129,12 @@ ApplicationWindow {
         visible: opacity > 0
         onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()
+        // Leaving the window across the panel drops the window hover while the panel is still
+        // hovered, so the exit has to be re-checked once the panel lets go.
+        onBusyChanged: {
+            if (!busy && !windowHover.hovered)
+                root.hideControls();
+        }
 
         Behavior on opacity {
             NumberAnimation {
