@@ -10,11 +10,11 @@ RowLayout {
 
     spacing: 4
 
-    Button {
+    IconButton {
         checkable: true
         checked: volumeControl.audioOutput.muted
-        focusPolicy: Qt.NoFocus
-        text: qsTr("Mute")
+        label: qsTr("Mute")
+        text: checked ? "\uE74F" : "\uE767"
         onToggled: volumeControl.audioOutput.muted = checked
     }
 

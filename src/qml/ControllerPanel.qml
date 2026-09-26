@@ -68,41 +68,41 @@ Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 70
 
-            Button {
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Open")
+            IconButton {
+                label: qsTr("Open")
+                text: "\uE8E5"
                 onClicked: panel.openRequested()
             }
 
-            Button {
+            IconButton {
                 visible: !panel.player.playing
                 enabled: panel.isOpen
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Play")
+                label: qsTr("Play")
+                text: "\uE768"
                 onClicked: panel.play()
             }
 
-            Button {
+            IconButton {
                 visible: panel.player.playing
                 enabled: panel.isOpen
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Pause")
+                label: qsTr("Pause")
+                text: "\uE769"
                 onClicked: panel.player.pause()
             }
 
-            Button {
+            IconButton {
                 enabled: panel.isOpen
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Stop")
+                label: qsTr("Stop")
+                text: "\uE71A"
                 onClicked: panel.player.stop()
             }
 
-            Button {
+            IconButton {
                 enabled: panel.isOpen && panel.player.seekable
                          && panel.player.mediaStatus !== MediaPlayer.EndOfMedia
                 autoRepeat: true
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Next frame")
+                label: qsTr("Next frame")
+                text: "\uEBE7"
                 onClicked: panel.stepFrame()
             }
 
@@ -125,25 +125,31 @@ Rectangle {
                 text: TimeFormat.hms(panel.positionSeconds) + " / " + TimeFormat.hms(panel.durationSeconds)
             }
 
-            Button {
+            IconButton {
                 checkable: true
                 checked: panel.player.loops === MediaPlayer.Infinite
-                focusPolicy: Qt.NoFocus
-                text: qsTr("Loop")
+                label: qsTr("Loop")
+                text: "\uE8EE"
                 onToggled: panel.player.loops = checked ? MediaPlayer.Infinite : 1
             }
 
+            // No glyph says "A-B", so this one stays text; "A-" shows the start is set.
             Button {
+                flat: true
                 enabled: panel.isOpen
                 checked: panel.segmentLoop.active
                 focusPolicy: Qt.NoFocus
-                text: panel.segmentLoop.hasStart && !panel.segmentLoop.active ? qsTr("A-B (A set)") : qsTr("A-B")
+                text: panel.segmentLoop.hasStart && !panel.segmentLoop.active ? "A-" : "A-B"
+                Accessible.name: qsTr("A-B loop")
+                ToolTip.visible: hovered
+                ToolTip.delay: 600
+                ToolTip.text: qsTr("A-B loop")
                 onClicked: panel.segmentLoop.advance()
             }
 
-            Button {
-                focusPolicy: Qt.NoFocus
-                text: panel.fullScreen ? qsTr("Exit full screen") : qsTr("Full screen")
+            IconButton {
+                label: panel.fullScreen ? qsTr("Exit full screen") : qsTr("Full screen")
+                text: panel.fullScreen ? "\uE73F" : "\uE740"
                 onClicked: panel.fullScreenRequested()
             }
         }
