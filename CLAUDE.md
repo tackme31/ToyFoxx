@@ -40,6 +40,10 @@ CMake presets and let each developer point at their own Qt installation.
 
 ## Build & Run
 
+With the Ninja generator, CMake does not set up the MSVC environment itself. Run these from an
+**x64 Native Tools Command Prompt for VS 2022** (or a shell where `vcvars64.bat` has been sourced),
+with Qt's `Tools/Ninja` on `PATH`.
+
 ```powershell
 # Configure (qt-cmake, from the Qt bin directory, selects the matching toolchain)
 qt-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
@@ -60,10 +64,13 @@ engine are not representative.
 ### QML tooling
 
 ```powershell
-qmllint --qmldirs ./src/qml ./src/qml/Main.qml   # run before committing QML
-qmlformat -i ./src/qml/Main.qml                  # canonical QML formatting
-qmlprofiler ./build/ToyFoxx.exe                  # binding / frame-time hotspots
+cmake --build build --target all_qmllint   # run before committing QML
+qmlformat -i ./src/qml/Main.qml            # canonical QML formatting
+qmlprofiler ./build/ToyFoxx.exe            # binding / frame-time hotspots
 ```
+
+Use the `all_qmllint` target rather than calling `qmllint` by hand: `qt_add_qml_module` generates the
+response file with the right import paths, which a bare invocation does not have.
 
 ## Architecture
 
@@ -148,6 +155,9 @@ Same clip, same machine, windowed *and* fullscreen: total CPU and hottest core, 
 utilization, frame times (PresentMon), and which hardware decoder was actually selected.
 
 ### Diagnostics
+
+The executable is built for the GUI subsystem (`WIN32_EXECUTABLE`), so it has no console of its own.
+Set `QT_ASSUME_STDERR_HAS_CONSOLE=1` to get Qt's logging on stderr when launching from a terminal.
 
 ```powershell
 $env:QSG_INFO = 1                                      # RHI backend, swapchain, GPU in use
