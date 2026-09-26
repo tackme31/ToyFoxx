@@ -75,5 +75,7 @@ $RECYCLE.BIN/
 
 # Claude settings
 .claude/settings.local.json
+# Per-machine MCP server setup (Serena, with this checkout's absolute path)
+.mcp.json
 .serena/
 *.stackdump
