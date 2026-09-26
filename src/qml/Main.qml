@@ -124,11 +124,19 @@ ApplicationWindow {
     HoverHandler {
         id: windowHover
 
+        // Where the cursor was when activity was last counted.
+        property point lastActivePosition: Qt.point(-1, -1)
+
         cursorShape: root.controlsShown ? Qt.ArrowCursor : Qt.BlankCursor
-        // point is also reset when the cursor leaves; that must not count as activity.
+        // Only a real move counts. Qt Quick re-delivers synthetic hover events at the resting
+        // cursor position whenever the scene changes, i.e. every frame during playback, and
+        // point is also reset when the cursor leaves.
         onPointChanged: {
-            if (hovered)
-                root.revealControls();
+            const position = point.position;
+            if (!hovered || (Math.abs(position.x - lastActivePosition.x) < 1 && Math.abs(position.y - lastActivePosition.y) < 1))
+                return;
+            lastActivePosition = position;
+            root.revealControls();
         }
         onHoveredChanged: {
             if (!hovered)
