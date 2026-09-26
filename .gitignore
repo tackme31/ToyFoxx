@@ -1,0 +1,77 @@
+# Build output
+build/
+build-*/
+out/
+cmake-build-*/
+install/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+*.cmake.stamp
+_deps/
+
+# Qt generated
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+.qmlls.ini
+.qtc_clangd/
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*_qmlcache.qrc
+
+# Compiler / linker artifacts
+*.o
+*.obj
+*.lib
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.exp
+*.pdb
+*.ilk
+*.idb
+*.res
+*.manifest
+
+# Visual Studio / VS Code / JetBrains
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.*
+*.user
+.idea/
+.cache/
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Claude settings
+.claude/settings.local.json
+.serena/
+*.stackdump
