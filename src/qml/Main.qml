@@ -26,11 +26,6 @@ ApplicationWindow {
             root.controlsShown = false;
     }
 
-    function seekBy(deltaMs: int) {
-        if (controllerPanel.isOpen && player.seekable)
-            player.position = Math.max(0, Math.min(player.duration, player.position + deltaMs));
-    }
-
     function toggleFullScreen() {
         if (root.visibility === Window.FullScreen) {
             root.visibility = root.visibilityBeforeFullScreen;
@@ -157,37 +152,11 @@ ApplicationWindow {
         targetWindow: root
     }
 
-    Shortcut {
-        sequence: "Space"
-        enabled: controllerPanel.isOpen
-        onActivated: player.playing ? player.pause() : controllerPanel.play()
-    }
-
-    Shortcut {
-        sequence: "Left"
-        onActivated: root.seekBy(-5000)
-    }
-
-    Shortcut {
-        sequence: "Right"
-        onActivated: root.seekBy(5000)
-    }
-
-    Shortcut {
-        sequence: "R"
-        enabled: controllerPanel.isOpen
-        onActivated: videoSurface.rotateClockwise()
-    }
-
-    Shortcut {
-        sequence: "F"
-        enabled: controllerPanel.isOpen && player.hasVideo
-        onActivated: videoSurface.showOriginalSize()
-    }
-
-    Shortcut {
-        sequence: "F4"
-        onActivated: diagnostics.visible = !diagnostics.visible
+    KeyboardShortcuts {
+        player: player
+        controllerPanel: controllerPanel
+        videoSurface: videoSurface
+        diagnostics: diagnostics
     }
 
     FileDialog {

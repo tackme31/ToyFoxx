@@ -35,6 +35,7 @@ qt_add_qml_module(toyfoxx
     QML_FILES
         src/qml/Main.qml
         src/qml/ControllerPanel.qml
+        src/qml/KeyboardShortcuts.qml
         src/qml/SeekBar.qml
         src/qml/SegmentLoop.qml
         src/qml/SpeedButton.qml
