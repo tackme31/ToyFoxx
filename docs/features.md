@@ -37,7 +37,7 @@ ToyBoxx の挙動は「仕様の出典」として扱う。バグや WPF 固有�
 | F-17 | スクリーンショット保存 | P2 | 済（キーのみ。ボタンは未） |
 | F-18 | 通知トースト（Snackbar 相当） | P2 | 済 |
 | F-19 | シークバーのサムネイルプレビュー | P3 | 未 |
-| F-20 | 設定の永続化 | P3 | 未 |
+| F-20 | 設定の永続化 | P3 | 一部（ループ / 音量 / ミュートは済。ウィンドウ位置とサイズは未） |
 | F-21 | テーマ（Dark / Light / HighContrast） | P3 | 未 |
 | F-22 | 全画面中のスリープ抑止 | P3 | 未 |
 | F-23 | カスタムタイトルバー（映像をタイトルバーの下まで広げる） | P2 | 未（方針決定済み。下記） |
@@ -337,7 +337,13 @@ ToyBoxx が保存している項目（終了時に保存、起動時に復元）
 | ミュート | bool | |
 
 ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持する。
-保存タイミングはウィンドウクローズ時。マルチモニタ構成で画面外に復元されないよう、
+- 保存先はレジストリではなく **`%APPDATA%\ToyFoxx\ToyFoxx.ini`**（`main.cpp` で
+  `QSettings::setDefaultFormat(QSettings::IniFormat)`。QML の `Settings` もこれに従う）。
+- 保存タイミングは終了時ではなく**値の変更時**（2026-09-27 決定）。複数起動時は最後の変更が残る
+  （Last Write Wins）。INI への書き込みは QSettings がロックとマージを行う。
+- ループ・音量・ミュートは `Main.qml` の `Settings`（カテゴリ `Playback`）。ループは `bool`。
+
+以下は ToyBoxx の当初仕様（保存タイミングはウィンドウクローズ時）。マルチモニタ構成で画面外に復元されないよう、
 利用可能なスクリーン矩形に収める補正を入れる（ToyBoxx には無い）。
 
 ### F-21 テーマ
@@ -430,6 +436,7 @@ ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から�
 | ファイルを開く手段 | D&D / コマンドライン引数のみ | ファイルダイアログも追加 |
 | DI | `Microsoft.Extensions.Hosting` | 使わない |
 | ウィンドウ位置の復元 | 無条件に復元 | スクリーン矩形内に収める |
+| 設定の保存 | 終了時に `Properties/Settings`（user.config） | 変更時に `%APPDATA%\ToyFoxx\ToyFoxx.ini` |
 
 ## 4. 未決事項
 
@@ -489,4 +496,6 @@ ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から�
   GUI スレッドで `toImage()` を 1 回だけ呼び、PNG のエンコードと書き込みはスレッドプールで行う。
   トーストのクリックは `ShellIntegration.revealInExplorer`（`src/platform/`、`SHOpenFolderAndSelectItems`）。
 - キーボードショートカットは `KeyboardShortcuts.qml` に集約している。
-- 次の着手候補: **4K 実測** → F-20（ループ・音量の保存を先行）→ F-19。
+- ビルドフォルダに `windeployqt` を実行済みだと、アプリは `build/qml` だけを見る。新しい QML モジュールを
+  import したら（例: `QtCore`）`windeployqt` を再実行しないと「モジュールがインストールされていない」で起動に失敗する。
+- 次の着手候補: **4K 実測** → F-19 → F-20 の残り（ウィンドウ位置とサイズ）。

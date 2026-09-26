@@ -4,6 +4,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
+#include <QSettings>
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,8 @@ int main(int argc, char *argv[])
     app.setApplicationName(QStringLiteral("ToyFoxx"));
     app.setApplicationVersion(QStringLiteral(TOYFOXX_VERSION));
     app.setOrganizationName(QStringLiteral("ToyFoxx"));
+    // %APPDATA%\ToyFoxx\ToyFoxx.ini instead of the registry. QML's Settings follows this default.
+    QSettings::setDefaultFormat(QSettings::IniFormat);
 
     QCommandLineParser parser;
     parser.addHelpOption();
