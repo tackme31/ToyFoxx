@@ -130,6 +130,8 @@ Rectangle {
 
             // No glyph says "A-B", so this one stays text; "A-" shows the start is set.
             Button {
+                // 70% of the 96 px minimum the FluentWinUI3 style gives text buttons.
+                implicitWidth: 67
                 flat: true
                 enabled: panel.isOpen
                 checked: panel.segmentLoop.active
