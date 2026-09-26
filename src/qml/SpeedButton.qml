@@ -11,6 +11,10 @@ Button {
     readonly property bool popupOpen: ratePopup.visible
     readonly property list<real> rates: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0]
 
+    // Fixed to the widest label, so the button neither wastes room nor changes width with the rate.
+    implicitWidth: widestLabel.advanceWidth + leftPadding + rightPadding
+    leftPadding: 8
+    rightPadding: 8
     flat: true
     checkable: true
     checked: ratePopup.visible
@@ -18,6 +22,13 @@ Button {
     text: qsTr("x %1").arg(player.playbackRate)
 
     onClicked: ratePopup.visible ? ratePopup.close() : ratePopup.open()
+
+    TextMetrics {
+        id: widestLabel
+
+        font: speedButton.font
+        text: qsTr("x %1").arg(0.25)
+    }
 
     Popup {
         id: ratePopup
@@ -37,6 +48,8 @@ Button {
                     required property real modelData
 
                     width: speedButton.width
+                    leftPadding: 8
+                    rightPadding: 8
                     flat: true
                     highlighted: modelData === speedButton.player.playbackRate
                     focusPolicy: Qt.NoFocus
