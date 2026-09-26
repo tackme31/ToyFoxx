@@ -18,6 +18,7 @@ Rectangle {
     // Whole seconds, so the label re-formats once per second rather than on every position notify.
     readonly property int positionSeconds: Math.floor(player.position / 1000)
     readonly property int durationSeconds: Math.floor(player.duration / 1000)
+    readonly property real frameRate: player.metaData.value(MediaMetaData.VideoFrameRate) || 30
 
     signal openRequested
     signal fullScreenRequested
@@ -31,6 +32,13 @@ Rectangle {
         if (player.mediaStatus === MediaPlayer.EndOfMedia)
             player.position = 0;
         player.play();
+    }
+
+    // Qt Multimedia has no frame-step API. This seeks by one nominal frame interval, so the
+    // result is bounded by seek granularity and may land on the same or the next-but-one frame.
+    function stepFrame() {
+        player.pause();
+        player.position = Math.min(player.duration, player.position + 1000 / frameRate);
     }
 
     implicitHeight: 120
@@ -91,6 +99,15 @@ Rectangle {
                 focusPolicy: Qt.NoFocus
                 text: qsTr("Stop")
                 onClicked: panel.player.stop()
+            }
+
+            Button {
+                enabled: panel.isOpen && panel.player.seekable
+                         && panel.player.mediaStatus !== MediaPlayer.EndOfMedia
+                autoRepeat: true
+                focusPolicy: Qt.NoFocus
+                text: qsTr("Next frame")
+                onClicked: panel.stepFrame()
             }
 
             SpeedButton {
