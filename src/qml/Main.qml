@@ -172,9 +172,13 @@ ApplicationWindow {
                 root.hideControls();
         }
 
+        // Keyed on the Behavior's own target so the duration is settled before the animation
+        // starts, whatever order the bindings on controlsShown re-evaluate in.
         Behavior on opacity {
+            id: panelFade
+
             NumberAnimation {
-                duration: root.controlsShown ? 100 : 300
+                duration: panelFade.targetValue > 0 ? 100 : 300
             }
         }
     }
