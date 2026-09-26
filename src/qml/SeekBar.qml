@@ -8,6 +8,15 @@ Slider {
     required property MediaPlayer player
     required property SegmentLoop segmentLoop
 
+    // Only where a position means something: live streams have no duration to preview.
+    readonly property bool previewAvailable: enabled && player.duration > 0
+
+    // Inverse of markerX: the media position under an x coordinate, clamped to the range.
+    function positionAt(x: real): real {
+        const fraction = (x - leftPadding - handle.width / 2) / (availableWidth - handle.width);
+        return from + Math.max(0, Math.min(1, fraction)) * (to - from);
+    }
+
     // Centre of the handle at a given media position, so markers line up with it.
     function markerX(ms: real): real {
         return leftPadding + handle.width / 2 + (ms - from) / (to - from) * (availableWidth - handle.width) - 1;
@@ -43,5 +52,23 @@ Slider {
         height: seekBar.height
         visible: seekBar.segmentLoop.active
         color: "white"
+    }
+
+    HoverHandler {
+        id: hover
+
+        onPointChanged: {
+            if (hovered && seekBar.previewAvailable)
+                preview.request(seekBar.positionAt(point.position.x));
+        }
+    }
+
+    SeekBarPreview {
+        id: preview
+
+        x: Math.max(0, Math.min(seekBar.width - width, hover.point.position.x - width / 2))
+        y: -height - 8
+        visible: hover.hovered && seekBar.previewAvailable
+        mainPlayer: seekBar.player
     }
 }

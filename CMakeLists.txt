@@ -41,6 +41,7 @@ qt_add_qml_module(toyfoxx
         src/qml/ControllerPanel.qml
         src/qml/KeyboardShortcuts.qml
         src/qml/SeekBar.qml
+        src/qml/SeekBarPreview.qml
         src/qml/SegmentLoop.qml
         src/qml/TimeFormat.js
         src/qml/Toast.qml
