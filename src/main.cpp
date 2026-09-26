@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QSettings>
+#include <QStyleHints>
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +27,8 @@ int main(int argc, char *argv[])
     const QUrl initialSource =
         arguments.isEmpty() ? QUrl() : toyfoxx::resolveMediaSource(arguments.constFirst());
 
+    // Dark only (F-21): the style would otherwise follow the OS light/dark setting.
+    QGuiApplication::styleHints()->setColorScheme(Qt::ColorScheme::Dark);
     QQuickStyle::setStyle(QStringLiteral("FluentWinUI3"));
 
     QQmlApplicationEngine engine;

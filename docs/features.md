@@ -38,7 +38,7 @@ ToyBoxx の挙動は「仕様の出典」として扱う。バグや WPF 固有�
 | F-18 | 通知トースト（Snackbar 相当） | P2 | 済 |
 | F-19 | シークバーのサムネイルプレビュー | P3 | 済（方式は下記。当初案から変更） |
 | F-20 | 設定の永続化 | P3 | 済 |
-| F-21 | テーマ（Dark / Light / HighContrast） | — | 対応しない（ダーク固定。下記） |
+| F-21 | テーマ（Dark / Light / HighContrast） | — | 対応しない（ダーク固定は済。下記） |
 | F-22 | 再生中のスリープ抑止（ToyBoxx は全画面中） | P3 | 済 |
 | F-23 | カスタムタイトルバー（映像をタイトルバーの下まで広げる） | P2 | 済（既知の粗さは下記） |
 | F-24 | エラー表示 | P3 | 済 |
@@ -382,8 +382,8 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
   `appsettings.user.json` による上書きも可。
 - ToyFoxx は**対応しない**（2026-09-27 に決定）。テーマはダーク固定で、切り替えの設定も
   自前のテーマシングルトンも作らない。Light / HighContrast も実装しない。
-- 未実装: ダークの強制。現状は FluentWinUI3 スタイルが OS の配色設定に従うため、OS がライトだと
-  ライトで表示される。
+- `main.cpp` で `QStyleHints::setColorScheme(Qt::ColorScheme::Dark)` を指定し、OS の配色設定に
+  関係なくダークで表示する（FluentWinUI3 は指定が無いと OS の設定に従う）。
 
 ### F-22 全画面中のスリープ抑止
 
