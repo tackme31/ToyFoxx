@@ -40,11 +40,15 @@ ApplicationWindow {
     height: 720
     minimumWidth: 640
     minimumHeight: 640
-    visible: true
     color: "black"
     title: player.source.toString() === "" ? qsTr("ToyFoxx") : qsTr("%1 - ToyFoxx").arg(MediaSource.displayTitle(player.source))
 
-    Component.onCompleted: openSource(initialSource)
+    // Shown only after the saved geometry is applied, so the window does not jump on startup.
+    Component.onCompleted: {
+        windowGeometry.restore();
+        root.visible = true;
+        openSource(initialSource);
+    }
 
     MediaPlayer {
         id: player
@@ -71,6 +75,12 @@ ApplicationWindow {
         property alias muted: audioOutput.muted
 
         category: "Playback"
+    }
+
+    WindowGeometry {
+        id: windowGeometry
+
+        window: root
     }
 
     SegmentLoop {

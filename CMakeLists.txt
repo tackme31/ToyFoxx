@@ -30,6 +30,8 @@ qt_add_qml_module(toyfoxx
     SOURCES
         src/app/MediaSource.cpp
         src/app/MediaSource.h
+        src/app/ScreenGeometry.cpp
+        src/app/ScreenGeometry.h
         src/media/PlaybackMonitor.cpp
         src/media/PlaybackMonitor.h
         src/media/ScreenshotSaver.cpp
@@ -48,6 +50,7 @@ qt_add_qml_module(toyfoxx
         src/qml/SpeedButton.qml
         src/qml/VolumeControl.qml
         src/qml/VideoSurface.qml
+        src/qml/WindowGeometry.qml
         src/qml/PlaybackDiagnostics.qml
 )
 
