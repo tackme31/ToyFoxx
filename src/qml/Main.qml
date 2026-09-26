@@ -1,7 +1,6 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Dialogs
 import QtMultimedia
 
 ApplicationWindow {
@@ -131,7 +130,6 @@ ApplicationWindow {
         player: player
         audioOutput: audioOutput
         segmentLoop: segmentLoop
-        onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()
     }
 
@@ -152,13 +150,5 @@ ApplicationWindow {
         videoSurface: videoSurface
         diagnostics: diagnostics
         onScreenshotRequested: screenshotSaver.save(videoSurface.videoOutput.videoSink, MediaSource.displayTitle(player.source))
-    }
-
-    FileDialog {
-        id: fileDialog
-
-        title: qsTr("Open media")
-        nameFilters: [qsTr("Video files (*.mp4 *.mkv *.webm *.mov *.avi *.wmv *.m4v *.ts *.m2ts *.flv)"), qsTr("All files (*)")]
-        onAccepted: root.openSource(MediaSource.resolveUrl(selectedFile))
     }
 }

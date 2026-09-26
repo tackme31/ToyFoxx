@@ -21,7 +21,6 @@ Rectangle {
     readonly property int durationSeconds: Math.floor(player.duration / 1000)
     readonly property real frameRate: player.metaData.value(MediaMetaData.VideoFrameRate) || 30
 
-    signal openRequested
     signal fullScreenRequested
 
     function play() {
@@ -67,12 +66,6 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 70
-
-            IconButton {
-                label: qsTr("Open")
-                text: "\uE8E5"
-                onClicked: panel.openRequested()
-            }
 
             IconButton {
                 visible: !panel.player.playing

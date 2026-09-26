@@ -19,7 +19,6 @@ Item {
     readonly property alias controllerPanel: controllerPanel
     readonly property alias toast: toast
 
-    signal openRequested
     signal fullScreenRequested
 
     function reveal() {
@@ -97,7 +96,6 @@ Item {
         // so the invisible panel does not keep catching clicks.
         opacity: chrome.shown ? 1 : 0
         visible: opacity > 0
-        onOpenRequested: chrome.openRequested()
         onFullScreenRequested: chrome.fullScreenRequested()
 
         // Keyed on the Behavior's own target so the duration is settled before the animation
