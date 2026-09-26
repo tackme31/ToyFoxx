@@ -52,6 +52,12 @@ ApplicationWindow {
         id: frameless
     }
 
+    // While video is playing, windowed or full screen; pausing lets the display sleep again.
+    // ToyBoxx did this in full screen only.
+    DisplayKeepAwake {
+        active: player.playing && player.hasVideo
+    }
+
     MediaPlayer {
         id: player
 

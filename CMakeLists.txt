@@ -49,6 +49,8 @@ qt_add_qml_module(toyfoxx
         src/platform/CaptionHoverTracker.cpp
         src/platform/CaptionHoverTracker.h
         src/platform/ShellIntegration.cpp
+        src/platform/DisplayKeepAwake.cpp
+        src/platform/DisplayKeepAwake.h
         src/platform/FramelessWindow.cpp
         src/platform/FramelessWindow.h
         src/platform/ShellIntegration.h
