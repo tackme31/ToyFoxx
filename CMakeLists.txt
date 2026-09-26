@@ -22,8 +22,11 @@ set(QWINDOWKIT_BUILD_STATIC  ON  CACHE BOOL "" FORCE)
 set(QWINDOWKIT_INSTALL       OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/qwindowkit)
 
+# The .rc embeds resources/icons/toyfoxx.ico as IDI_ICON1, which Qt also uses as the window and
+# taskbar icon. The .ico is rendered from resources/icons/toyfoxx.svg; regenerate it when the SVG changes.
 qt_add_executable(toyfoxx
     src/main.cpp
+    resources/toyfoxx.rc
 )
 
 set_target_properties(toyfoxx PROPERTIES
@@ -71,6 +74,8 @@ qt_add_qml_module(toyfoxx
         src/qml/WindowGeometry.qml
         src/qml/WindowChrome.qml
         src/qml/PlaybackDiagnostics.qml
+    RESOURCES
+        resources/icons/toyfoxx.svg
 )
 
 target_include_directories(toyfoxx

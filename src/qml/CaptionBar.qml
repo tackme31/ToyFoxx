@@ -15,9 +15,21 @@ Rectangle {
     implicitHeight: 32
     color: Qt.alpha(palette.window, 0.8)
 
-    Label {
+    Image {
+        id: appIcon
+
         anchors.left: parent.left
         anchors.leftMargin: 12
+        anchors.verticalCenter: parent.verticalCenter
+        width: 16
+        height: 16
+        sourceSize: Qt.size(width, height)
+        source: "../../resources/icons/toyfoxx.svg"
+    }
+
+    Label {
+        anchors.left: appIcon.right
+        anchors.leftMargin: 8
         anchors.right: systemButtons.left
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
