@@ -435,5 +435,5 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 - 区間ループ（F-14）の状態は非表示コンポーネント `SegmentLoop.qml`。位置監視の `Connections` は有効中だけ
   接続する。終了点が動画末尾と重なる場合に備え、`EndOfMedia` でも開始点へ戻す。
 - コマ送り（F-15）は `metaData` の `VideoFrameRate`（無ければ 30fps とみなす）から 1 フレーム分シークする。
-  実機では 4K60 素材で 1 コマずつ進み、連打・長押し（`autoRepeat`）とも問題なし。
+  実機確認で 1 コマずつ進み、連打・長押し（`autoRepeat`）とも問題なし。
 - 次の着手候補: **4K 実測** → F-16〜F-18（ズーム系 → スクリーンショット → トースト）。
