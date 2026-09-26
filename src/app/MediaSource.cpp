@@ -24,7 +24,11 @@ QUrl resolveMediaSource(const QString &input)
     // Hand the string over unchanged so signed URLs keep their exact query. A one-letter
     // scheme is a Windows drive letter of a path that does not exist, not a URI.
     const QUrl url(text);
-    if (url.isValid() && !url.isRelative() && url.scheme().size() > 1 && !url.isLocalFile())
+    if (url.isLocalFile()) {
+        const QFileInfo urlFile(url.toLocalFile());
+        return urlFile.isFile() ? QUrl::fromLocalFile(urlFile.absoluteFilePath()) : QUrl();
+    }
+    if (url.isValid() && !url.isRelative() && url.scheme().size() > 1)
         return url;
 
     return {};
