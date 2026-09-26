@@ -38,6 +38,7 @@ qt_add_qml_module(toyfoxx
         src/qml/KeyboardShortcuts.qml
         src/qml/SeekBar.qml
         src/qml/SegmentLoop.qml
+        src/qml/Toast.qml
         src/qml/SpeedButton.qml
         src/qml/VolumeControl.qml
         src/qml/VideoSurface.qml

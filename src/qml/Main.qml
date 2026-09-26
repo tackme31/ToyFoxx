@@ -152,6 +152,16 @@ ApplicationWindow {
         targetWindow: root
     }
 
+    Toast {
+        id: toast
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 12
+        // Above the panel's area whether or not the panel is showing, so it never jumps.
+        anchors.bottomMargin: controllerPanel.height + 12
+    }
+
     KeyboardShortcuts {
         player: player
         controllerPanel: controllerPanel
