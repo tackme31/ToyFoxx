@@ -32,6 +32,10 @@ qt_add_qml_module(toyfoxx
         src/app/MediaSource.h
         src/media/PlaybackMonitor.cpp
         src/media/PlaybackMonitor.h
+        src/media/ScreenshotSaver.cpp
+        src/media/ScreenshotSaver.h
+        src/platform/ShellIntegration.cpp
+        src/platform/ShellIntegration.h
     QML_FILES
         src/qml/Main.qml
         src/qml/ControllerPanel.qml
@@ -49,6 +53,7 @@ target_include_directories(toyfoxx
     PRIVATE
         src/app
         src/media
+        src/platform
 )
 
 target_compile_definitions(toyfoxx

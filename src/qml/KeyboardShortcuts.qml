@@ -10,6 +10,8 @@ Item {
     required property VideoSurface videoSurface
     required property Item diagnostics
 
+    signal screenshotRequested
+
     function seekBy(deltaMs: int) {
         if (controllerPanel.isOpen && player.seekable)
             player.position = Math.max(0, Math.min(player.duration, player.position + deltaMs));
@@ -41,6 +43,12 @@ Item {
         sequence: "F"
         enabled: shortcuts.controllerPanel.isOpen && shortcuts.player.hasVideo
         onActivated: shortcuts.videoSurface.showOriginalSize()
+    }
+
+    Shortcut {
+        sequence: "S"
+        enabled: shortcuts.controllerPanel.isOpen && shortcuts.player.hasVideo
+        onActivated: shortcuts.screenshotRequested()
     }
 
     Shortcut {

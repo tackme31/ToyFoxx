@@ -63,6 +63,13 @@ ApplicationWindow {
         player: player
     }
 
+    ScreenshotSaver {
+        id: screenshotSaver
+
+        onSaved: filePath => toast.show(qsTr("Screenshot saved"), filePath, () => ShellIntegration.revealInExplorer(filePath))
+        onFailed: message => toast.show(qsTr("Screenshot failed"), message, null)
+    }
+
     VideoSurface {
         id: videoSurface
 
@@ -167,6 +174,7 @@ ApplicationWindow {
         controllerPanel: controllerPanel
         videoSurface: videoSurface
         diagnostics: diagnostics
+        onScreenshotRequested: screenshotSaver.save(videoSurface.videoOutput.videoSink, MediaSource.displayTitle(player.source))
     }
 
     FileDialog {
