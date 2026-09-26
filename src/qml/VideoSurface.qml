@@ -11,6 +11,14 @@ Item {
     property real panY: 0
     property int videoRotation: 0
     readonly property alias videoOutput: videoOutput
+    // At 90 and 270 degrees the fitted frame lies on its side; this refits it to the item, so
+    // zoom 1 always means "fits the window". ToyBoxx let the rotated frame overflow instead.
+    readonly property real rotationFit: {
+        const shown = videoOutput.contentRect;
+        if (videoRotation % 180 === 0 || shown.width <= 0 || shown.height <= 0)
+            return 1;
+        return Math.min(width / shown.height, height / shown.width);
+    }
 
     signal doubleClicked
 
@@ -27,9 +35,8 @@ Item {
     }
 
     // The frame is fitted into the item, so 1:1 is the inverse of that fit, in device pixels.
-    // Rotation does not change the fit, so it needs no special case here.
     function showOriginalSize() {
-        const shownWidth = videoOutput.contentRect.width * Screen.devicePixelRatio;
+        const shownWidth = videoOutput.contentRect.width * rotationFit * Screen.devicePixelRatio;
         if (shownWidth > 0 && videoOutput.sourceRect.width > 0)
             setZoom(videoOutput.sourceRect.width / shownWidth);
     }
@@ -50,7 +57,7 @@ Item {
         y: surface.panY
         width: surface.width
         height: surface.height
-        scale: surface.zoom
+        scale: surface.zoom * surface.rotationFit
         rotation: surface.videoRotation
     }
 
