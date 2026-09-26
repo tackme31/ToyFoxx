@@ -111,6 +111,14 @@ Rectangle {
             }
 
             Button {
+                checkable: true
+                checked: panel.player.loops === MediaPlayer.Infinite
+                focusPolicy: Qt.NoFocus
+                text: qsTr("Loop")
+                onToggled: panel.player.loops = checked ? MediaPlayer.Infinite : 1
+            }
+
+            Button {
                 focusPolicy: Qt.NoFocus
                 text: panel.fullScreen ? qsTr("Exit full screen") : qsTr("Full screen")
                 onClicked: panel.fullScreenRequested()
