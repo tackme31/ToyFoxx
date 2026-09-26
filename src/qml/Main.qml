@@ -1,3 +1,4 @@
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
@@ -49,12 +50,27 @@ ApplicationWindow {
         id: player
 
         autoPlay: true
+        // Initial value only; the panel's toggle assigns loops directly afterwards.
+        loops: playbackSettings.loop ? MediaPlayer.Infinite : 1
         videoOutput: videoSurface.videoOutput
         audioOutput: AudioOutput {
             id: audioOutput
         }
 
+        onLoopsChanged: playbackSettings.loop = loops === MediaPlayer.Infinite
         onErrorOccurred: (error, errorString) => console.warn("Media failed:", error, errorString)
+    }
+
+    // Written on every change rather than on exit, so with several instances running the
+    // last change made in any of them wins.
+    Settings {
+        id: playbackSettings
+
+        property bool loop: false
+        property alias volume: audioOutput.volume
+        property alias muted: audioOutput.muted
+
+        category: "Playback"
     }
 
     SegmentLoop {
