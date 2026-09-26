@@ -122,7 +122,7 @@ F-01 to F-24, priorities, ToyBoxx behaviour, and intentional differences). Keep 
 | Step forward one frame | No `QMediaPlayer` API for this. Pause, then advance `position` by `1000 / VideoFrameRate` taken from `metaData`. Accuracy is bounded by seek granularity — document that caveat rather than hiding it |
 | A-B segment loop | Watch `onPositionChanged` and seek back at the endpoint. Resolution is bounded by the position notify rate; do not busy-poll |
 | Screenshot (`S`) | Read `videoOutput.videoSink.videoFrame` and call `QVideoFrame::toImage()` **on keypress only** — one readback at source resolution. Never a per-frame grab, and not `grabToImage`, which captures the composited and transformed item instead |
-| Seek-bar thumbnail preview | A second, hidden `QMediaPlayer` with a bare `QVideoSink` and no `VideoOutput`, seeking and grabbing single frames. ToyBoxx used a full second `MediaElement`; do not repeat that |
+| Seek-bar thumbnail preview | A second, silent `MediaPlayer` kept paused and rendering into a small `VideoOutput` in the preview box, opened on first hover and seeking after a 250 ms rest. Frames stay on the GPU; do not grab them to images, which reads a full-resolution frame back per hover |
 | Themes (Dark / Light / High Contrast) | Controls style plus a QML theme singleton |
 | Toast after saving a screenshot | QML overlay in the same window |
 | Auto-hide the controller panel after 3 s idle | `Timer` plus an `opacity` animation |
