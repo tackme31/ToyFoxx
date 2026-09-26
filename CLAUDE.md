@@ -172,6 +172,15 @@ $env:QT_MEDIA_BACKEND = "ffmpeg"                       # default on Windows; "wi
 `QT_FFMPEG_*` and `QT_DISABLE_HW_TEXTURES_CONVERSION` are private Qt API. Use them to diagnose, never to ship a
 workaround baked into the app.
 
+## Git workflow
+
+- **`develop` is the working branch.** Implement there. `master` holds the stable state and is merged
+  into deliberately, not per commit.
+- **Pushing to `develop` is pre-authorized.** Commit and `git push` without asking each time.
+- Still ask first for: pushing to `master`, force-pushing, rewriting published history, deleting
+  branches or tags, and opening or merging pull requests.
+- One logical change per commit. Do not mix a feature with unrelated refactoring.
+
 ## Conventions
 
 - C++20 and Qt 6 idioms: new-style `connect`, `Q_PROPERTY` with `NOTIFY` (and `BINDABLE` where it helps),
