@@ -8,6 +8,8 @@ Debug/
 Release/
 RelWithDebInfo/
 MinSizeRel/
+# Release/ also matches the /release skill on a case-insensitive file system
+!/.claude/skills/release/
 
 # CMake
 CMakeCache.txt
