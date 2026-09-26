@@ -37,6 +37,7 @@ qt_add_qml_module(toyfoxx
         src/qml/ControllerPanel.qml
         src/qml/SeekBar.qml
         src/qml/SpeedButton.qml
+        src/qml/VolumeControl.qml
         src/qml/PlaybackDiagnostics.qml
 )
 

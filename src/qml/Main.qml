@@ -39,7 +39,9 @@ ApplicationWindow {
 
         autoPlay: true
         videoOutput: videoOutput
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput {
+            id: audioOutput
+        }
 
         onErrorOccurred: (error, errorString) => console.warn("Media failed:", error, errorString)
     }
@@ -77,6 +79,7 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         player: player
+        audioOutput: audioOutput
         fullScreen: root.visibility === Window.FullScreen
         onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()

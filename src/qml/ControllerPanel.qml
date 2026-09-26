@@ -7,6 +7,7 @@ Rectangle {
     id: panel
 
     required property MediaPlayer player
+    required property AudioOutput audioOutput
     property bool fullScreen: false
 
     readonly property bool isOpen: player.mediaStatus >= MediaPlayer.LoadedMedia
@@ -87,6 +88,10 @@ Rectangle {
             SpeedButton {
                 enabled: panel.isOpen
                 player: panel.player
+            }
+
+            VolumeControl {
+                audioOutput: panel.audioOutput
             }
 
             Item {
