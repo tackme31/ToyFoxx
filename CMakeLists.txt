@@ -66,6 +66,7 @@ qt_add_qml_module(toyfoxx
         src/qml/VolumeControl.qml
         src/qml/VideoSurface.qml
         src/qml/WindowGeometry.qml
+        src/qml/WindowChrome.qml
         src/qml/PlaybackDiagnostics.qml
 )
 
