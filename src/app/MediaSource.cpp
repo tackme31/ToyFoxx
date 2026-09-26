@@ -42,8 +42,11 @@ QString mediaDisplayTitle(const QUrl &source)
                                          : QFileInfo(source.fileName()).completeBaseName();
     if (title.isEmpty())
         title = source.host();
-    if (title.size() > maxLength)
-        title = title.first(maxLength) + QStringLiteral("...");
+    if (title.size() > maxLength) {
+        // Do not cut a surrogate pair in half.
+        const qsizetype cut = title.at(maxLength - 1).isHighSurrogate() ? maxLength - 1 : maxLength;
+        title = title.first(cut) + QStringLiteral("...");
+    }
     return title;
 }
 
