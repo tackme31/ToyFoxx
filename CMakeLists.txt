@@ -39,6 +39,7 @@ qt_add_qml_module(toyfoxx
         src/qml/SegmentLoop.qml
         src/qml/SpeedButton.qml
         src/qml/VolumeControl.qml
+        src/qml/VideoSurface.qml
         src/qml/PlaybackDiagnostics.qml
 )
 

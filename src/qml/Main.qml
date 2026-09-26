@@ -54,7 +54,7 @@ ApplicationWindow {
         id: player
 
         autoPlay: true
-        videoOutput: videoOutput
+        videoOutput: videoSurface.videoOutput
         audioOutput: AudioOutput {
             id: audioOutput
         }
@@ -68,10 +68,11 @@ ApplicationWindow {
         player: player
     }
 
-    VideoOutput {
-        id: videoOutput
+    VideoSurface {
+        id: videoSurface
 
         anchors.fill: parent
+        onDoubleClicked: root.toggleFullScreen()
     }
 
     Label {
@@ -80,11 +81,6 @@ ApplicationWindow {
         color: "#808080"
         font.pixelSize: 16
         text: qsTr("Drop a media file here")
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onDoubleClicked: root.toggleFullScreen()
     }
 
     DropArea {
@@ -157,7 +153,7 @@ ApplicationWindow {
         y: 12
         visible: false
         player: player
-        videoOutput: videoOutput
+        videoOutput: videoSurface.videoOutput
         targetWindow: root
     }
 
@@ -175,6 +171,18 @@ ApplicationWindow {
     Shortcut {
         sequence: "Right"
         onActivated: root.seekBy(5000)
+    }
+
+    Shortcut {
+        sequence: "R"
+        enabled: controllerPanel.isOpen
+        onActivated: videoSurface.rotateClockwise()
+    }
+
+    Shortcut {
+        sequence: "F"
+        enabled: controllerPanel.isOpen && player.hasVideo
+        onActivated: videoSurface.showOriginalSize()
     }
 
     Shortcut {
