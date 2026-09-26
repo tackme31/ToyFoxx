@@ -212,6 +212,7 @@ ToyFoxx では、この活性条件のもとになる状態を QML 側で `Media
 | `Ctrl` + ホイール | ズーム | — |
 | 左ドラッグ | パン（ズーム倍率 > 1.0 のときのみ） | — |
 | 中クリック | ズーム / パン / 回転のリセット | — |
+| `F4` | 診断オーバーレイの表示切替（ToyFoxx で追加。既定は非表示） | — |
 
 ToyBoxx はコントローラーパネルにフォーカスが移ってもキーが効くように、キー入力ごとに
 フォーカスをウィンドウへ戻している。ToyFoxx では最上位 `Item` に `focus: true` を置き、
@@ -416,13 +417,13 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 - ソース解決（F-02 の規則）は C++ の `MediaSource` シングルトン（`src/app/`）。コマンドライン引数は
   `main.cpp` で同じ関数を通して `Main.initialSource` に渡す。
 - `VideoSurface.qml` はまだ無い。変換を持たない段階ではラッパーが不要なので、F-16 で作る。
-- **一時的な診断オーバーレイ**（`PlaybackDiagnostics.qml` + `src/media/PlaybackMonitor`、`F12` で表示切替）。
+- **診断オーバーレイ**（`PlaybackDiagnostics.qml` + `src/media/PlaybackMonitor`、`F4` で表示切替、既定は非表示）。
   ToyBoxx で再生ボタンが点滅した現象（FFME のクロック停止）に相当する指標を出す。Qt の FFmpeg
   バックエンドは遅延時にクロックを止めずフレームを捨てる設計と見られるため、状態の点滅（Stall events /
   playing toggles）だけでなく、シンクへのフレーム到着間隔（Max gap / Late frames = 期待間隔の 1.5 倍超）と
   シーングラフの表示レート（Present fps）も出している。シーク直後は間隔が空くので Late frames に 1 件入る。
   `Rate` 行に再生速度と、それを掛けた期待フレームレートを出す。速度を変えると累計はリセットされる。
-  4K 調査が終わったら削除する。
+  常設する。非表示の間は計測の接続を切るので負荷は無い。今後の実装で邪魔になれば削除してよい。
 - **実機での体感確認（2026-09-27）**: 実際の 4K 素材を 3 倍速・全画面で再生すると、診断ランプが
   ごくまれに一瞬赤く（Late frames）なる程度。オーバーレイ無しでは気にならず、ToyBoxx より明らかに
   改善している。CLAUDE.md の Baseline 項目（CPU / GPU / PresentMon）による数値比較はまだ。

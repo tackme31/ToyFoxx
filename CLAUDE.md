@@ -172,6 +172,11 @@ $env:QT_MEDIA_BACKEND = "ffmpeg"                       # default on Windows; "wi
 `QT_FFMPEG_*` and `QT_DISABLE_HW_TEXTURES_CONVERSION` are private Qt API. Use them to diagnose, never to ship a
 workaround baked into the app.
 
+In the app, `F4` toggles a diagnostics overlay: playback state and stall events (the equivalent of
+ToyBoxx's flickering play button), frame arrival rate and gaps at the video sink against the expected
+rate (stream fps x playback rate), and the scene-graph present rate. It is hidden by default and
+disconnects its measurement while hidden. Remove it if it ever gets in the way.
+
 ## Git workflow
 
 - **`develop` is the working branch.** Implement there. `master` holds the stable state and is merged

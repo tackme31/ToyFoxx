@@ -87,13 +87,14 @@ ApplicationWindow {
 
         x: 12
         y: 12
+        visible: false
         player: player
         videoOutput: videoOutput
         targetWindow: root
     }
 
     Shortcut {
-        sequence: "F12"
+        sequence: "F4"
         onActivated: diagnostics.visible = !diagnostics.visible
     }
 

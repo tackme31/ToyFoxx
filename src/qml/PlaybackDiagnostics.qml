@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtMultimedia
 
-// Temporary diagnostic overlay for the 4K playback investigation. Not part of the feature set.
+// Developer overlay (F4) for judging playback smoothness. Measurement stops while it is hidden.
 Rectangle {
     id: diagnostics
 
