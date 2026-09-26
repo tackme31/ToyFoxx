@@ -84,6 +84,11 @@ Rectangle {
                 onClicked: panel.player.stop()
             }
 
+            SpeedButton {
+                enabled: panel.isOpen
+                player: panel.player
+            }
+
             Item {
                 Layout.fillWidth: true
             }

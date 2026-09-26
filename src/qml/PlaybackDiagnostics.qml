@@ -17,11 +17,11 @@ Rectangle {
     readonly property bool stalling: settled && player.playing && (player.mediaStatus === MediaPlayer.StalledMedia || player.mediaStatus === MediaPlayer.BufferingMedia)
     property int stallEvents: 0
     property int playingToggles: 0
+    readonly property real frameRate: player.metaData.value(MediaMetaData.VideoFrameRate) ?? 0
 
     function resetCounters() {
         diagnostics.stallEvents = 0;
         diagnostics.playingToggles = 0;
-        diagnostics.settled = false;
         monitor.reset();
     }
 
@@ -44,7 +44,8 @@ Rectangle {
         videoSink: diagnostics.videoOutput.videoSink
         window: diagnostics.targetWindow
         playing: diagnostics.player.playing
-        expectedFps: diagnostics.player.metaData.value(MediaMetaData.VideoFrameRate) ?? 0
+        // Frames reach the sink at the stream rate times the playback rate.
+        expectedFps: diagnostics.frameRate * diagnostics.player.playbackRate
 
         onStatsChanged: {
             if (monitor.recentLateFrames > 0)
@@ -62,7 +63,13 @@ Rectangle {
             ++diagnostics.playingToggles;
         }
 
+        // Per-rate numbers are what matter, so start over whenever the rate changes.
+        function onPlaybackRateChanged() {
+            diagnostics.resetCounters();
+        }
+
         function onSourceChanged() {
+            diagnostics.settled = false;
             diagnostics.resetCounters();
         }
 
@@ -109,7 +116,13 @@ Rectangle {
         Label {
             color: "white"
             font.family: "Consolas"
-            text: "Video: %1  %2x%3  %4 fps".arg(diagnostics.player.metaData.stringValue(MediaMetaData.VideoCodec)).arg(diagnostics.videoOutput.sourceRect.width).arg(diagnostics.videoOutput.sourceRect.height).arg(monitor.expectedFps.toFixed(3))
+            text: "Video: %1  %2x%3  %4 fps".arg(diagnostics.player.metaData.stringValue(MediaMetaData.VideoCodec)).arg(diagnostics.videoOutput.sourceRect.width).arg(diagnostics.videoOutput.sourceRect.height).arg(diagnostics.frameRate.toFixed(3))
+        }
+
+        Label {
+            color: "white"
+            font.family: "Consolas"
+            text: "Rate: x%1  expected sink fps: %2".arg(diagnostics.player.playbackRate).arg(monitor.expectedFps.toFixed(1))
         }
 
         Label {
