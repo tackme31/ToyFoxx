@@ -82,6 +82,21 @@ ApplicationWindow {
         onFullScreenRequested: root.toggleFullScreen()
     }
 
+    PlaybackDiagnostics {
+        id: diagnostics
+
+        x: 12
+        y: 12
+        player: player
+        videoOutput: videoOutput
+        targetWindow: root
+    }
+
+    Shortcut {
+        sequence: "F12"
+        onActivated: diagnostics.visible = !diagnostics.visible
+    }
+
     FileDialog {
         id: fileDialog
 

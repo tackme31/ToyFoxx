@@ -416,4 +416,10 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 - ソース解決（F-02 の規則）は C++ の `MediaSource` シングルトン（`src/app/`）。コマンドライン引数は
   `main.cpp` で同じ関数を通して `Main.initialSource` に渡す。
 - `VideoSurface.qml` はまだ無い。変換を持たない段階ではラッパーが不要なので、F-16 で作る。
+- **一時的な診断オーバーレイ**（`PlaybackDiagnostics.qml` + `src/media/PlaybackMonitor`、`F12` で表示切替）。
+  ToyBoxx で再生ボタンが点滅した現象（FFME のクロック停止）に相当する指標を出す。Qt の FFmpeg
+  バックエンドは遅延時にクロックを止めずフレームを捨てる設計と見られるため、状態の点滅（Stall events /
+  playing toggles）だけでなく、シンクへのフレーム到着間隔（Max gap / Late frames = 期待間隔の 1.5 倍超）と
+  シーングラフの表示レート（Present fps）も出している。シーク直後は間隔が空くので Late frames に 1 件入る。
+  4K 調査が終わったら削除する。
 - 次の着手候補: **4K 実測** → F-06 / F-08 / F-09 の残り → F-10〜F-11。

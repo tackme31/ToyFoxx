@@ -25,18 +25,24 @@ set_target_properties(toyfoxx PROPERTIES
 
 qt_add_qml_module(toyfoxx
     URI ToyFoxx
+    DEPENDENCIES
+        QtMultimedia
     SOURCES
         src/app/MediaSource.cpp
         src/app/MediaSource.h
+        src/media/PlaybackMonitor.cpp
+        src/media/PlaybackMonitor.h
     QML_FILES
         src/qml/Main.qml
         src/qml/ControllerPanel.qml
         src/qml/SeekBar.qml
+        src/qml/PlaybackDiagnostics.qml
 )
 
 target_include_directories(toyfoxx
     PRIVATE
         src/app
+        src/media
 )
 
 target_compile_definitions(toyfoxx
