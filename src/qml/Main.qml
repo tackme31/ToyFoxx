@@ -8,11 +8,22 @@ ApplicationWindow {
 
     property url initialSource
     property int visibilityBeforeFullScreen: Window.Windowed
+    property bool controlsShown: true
 
     function openSource(source: url) {
         if (source.toString() === "")
             return;
         player.source = source;
+    }
+
+    function revealControls() {
+        root.controlsShown = true;
+        idleTimer.restart();
+    }
+
+    function hideControls() {
+        if (!controllerPanel.busy)
+            root.controlsShown = false;
     }
 
     function toggleFullScreen() {
@@ -74,15 +85,49 @@ ApplicationWindow {
         }
     }
 
+    // Declared on the content item, so it stays hovered over the panel's buttons too.
+    HoverHandler {
+        cursorShape: root.controlsShown ? Qt.ArrowCursor : Qt.BlankCursor
+        // point is also reset when the cursor leaves; that must not count as activity.
+        onPointChanged: {
+            if (hovered)
+                root.revealControls();
+        }
+        onHoveredChanged: {
+            if (!hovered)
+                root.hideControls();
+        }
+    }
+
+    Timer {
+        id: idleTimer
+
+        interval: 3000
+        running: true
+        onTriggered: root.hideControls()
+    }
+
     ControllerPanel {
+        id: controllerPanel
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         player: player
         audioOutput: audioOutput
         fullScreen: root.visibility === Window.FullScreen
+        // Faded rather than hidden outright; visible drops only once the fade-out has finished,
+        // so the invisible panel does not keep catching clicks.
+        opacity: root.controlsShown ? 1 : 0
+        visible: opacity > 0
         onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.controlsShown ? 100 : 300
+            }
+        }
     }
 
     PlaybackDiagnostics {

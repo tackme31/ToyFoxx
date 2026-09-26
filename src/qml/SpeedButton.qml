@@ -8,6 +8,7 @@ Button {
     id: speedButton
 
     required property MediaPlayer player
+    readonly property bool popupOpen: ratePopup.visible
     readonly property list<real> rates: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0]
 
     checkable: true
