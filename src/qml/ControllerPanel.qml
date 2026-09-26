@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
+import "TimeFormat.js" as TimeFormat
 
 Rectangle {
     id: panel
@@ -22,11 +23,6 @@ Rectangle {
 
     signal openRequested
     signal fullScreenRequested
-
-    function formatTime(totalSeconds: int): string {
-        const pad = n => n.toString().padStart(2, "0");
-        return pad(Math.floor(totalSeconds / 3600)) + ":" + pad(Math.floor(totalSeconds / 60) % 60) + ":" + pad(totalSeconds % 60);
-    }
 
     function play() {
         if (player.mediaStatus === MediaPlayer.EndOfMedia)
@@ -126,7 +122,7 @@ Rectangle {
             }
 
             Label {
-                text: panel.formatTime(panel.positionSeconds) + " / " + panel.formatTime(panel.durationSeconds)
+                text: TimeFormat.hms(panel.positionSeconds) + " / " + TimeFormat.hms(panel.durationSeconds)
             }
 
             Button {
