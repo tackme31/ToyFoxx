@@ -30,6 +30,19 @@ QUrl resolveMediaSource(const QString &input)
     return {};
 }
 
+QString mediaDisplayTitle(const QUrl &source)
+{
+    constexpr qsizetype maxLength = 64;
+
+    QString title = source.isLocalFile() ? QFileInfo(source.toLocalFile()).completeBaseName()
+                                         : QFileInfo(source.fileName()).completeBaseName();
+    if (title.isEmpty())
+        title = source.host();
+    if (title.size() > maxLength)
+        title = title.first(maxLength) + QStringLiteral("...");
+    return title;
+}
+
 } // namespace toyfoxx
 
 QUrl MediaSource::resolve(const QString &input) const
@@ -40,4 +53,9 @@ QUrl MediaSource::resolve(const QString &input) const
 QUrl MediaSource::resolveUrl(const QUrl &url) const
 {
     return toyfoxx::resolveMediaSource(url.isLocalFile() ? url.toLocalFile() : url.toString());
+}
+
+QString MediaSource::displayTitle(const QUrl &source) const
+{
+    return toyfoxx::mediaDisplayTitle(source);
 }

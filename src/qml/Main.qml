@@ -30,7 +30,7 @@ ApplicationWindow {
     minimumHeight: 640
     visible: true
     color: "black"
-    title: qsTr("ToyFoxx")
+    title: player.source.toString() === "" ? qsTr("ToyFoxx") : qsTr("%1 - ToyFoxx").arg(MediaSource.displayTitle(player.source))
 
     Component.onCompleted: openSource(initialSource)
 
