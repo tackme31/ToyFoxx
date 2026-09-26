@@ -15,6 +15,21 @@ ApplicationWindow {
         player.source = source;
     }
 
+    function mediaErrorName(error: int): string {
+        switch (error) {
+        case MediaPlayer.ResourceError:
+            return qsTr("resource error");
+        case MediaPlayer.FormatError:
+            return qsTr("unsupported format");
+        case MediaPlayer.NetworkError:
+            return qsTr("network error");
+        case MediaPlayer.AccessDeniedError:
+            return qsTr("access denied");
+        default:
+            return qsTr("error %1").arg(error);
+        }
+    }
+
     function toggleFullScreen() {
         if (root.visibility === Window.FullScreen) {
             root.visibility = root.visibilityBeforeFullScreen;
@@ -70,7 +85,10 @@ ApplicationWindow {
         }
 
         onLoopsChanged: playbackSettings.loop = loops === MediaPlayer.Infinite
-        onErrorOccurred: (error, errorString) => console.warn("Media failed:", error, errorString)
+        onErrorOccurred: (error, errorString) => {
+            console.warn("Media failed:", error, errorString);
+            chrome.toast.show(qsTr("Media failed: %1").arg(root.mediaErrorName(error)), errorString, null);
+        }
     }
 
     // Written on every change rather than on exit, so with several instances running the
