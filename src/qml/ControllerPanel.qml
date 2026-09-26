@@ -13,7 +13,7 @@ Rectangle {
     property bool fullScreen: false
 
     // True while auto-hiding the panel would get in the user's way.
-    readonly property bool busy: panelHover.hovered || speedButton.popupOpen
+    readonly property bool busy: panelHover.hovered || speedButton.popupOpen || volumeControl.popupOpen
     readonly property bool isOpen: player.mediaStatus >= MediaPlayer.LoadedMedia
                                    && player.mediaStatus !== MediaPlayer.InvalidMedia
     // Whole seconds, so the label re-formats once per second rather than on every position notify.
@@ -107,6 +107,8 @@ Rectangle {
             }
 
             VolumeControl {
+                id: volumeControl
+
                 audioOutput: panel.audioOutput
             }
 
