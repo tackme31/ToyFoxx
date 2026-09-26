@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QVideoSink>
 
+#include <memory>
+
 // Diagnostic only: measures how evenly frames reach the video sink and how often the scene graph
 // presents, without touching frame contents. Per-frame work is a timestamp under an uncontended
 // lock on the emitting thread; QML only sees a snapshot every update interval.
@@ -73,9 +75,22 @@ private:
         qint64 lastSinkNs = -1;
     };
 
+    // Everything the decoder and render threads touch. Held by shared_ptr and captured by the
+    // per-frame connections, so a callback already running when this QObject is destroyed
+    // (disconnect() does not wait for it) still finds the state alive.
+    struct Shared
+    {
+        void onSinkFrame();
+        void onFrameSwapped();
+
+        QElapsedTimer clock;
+        QMutex mutex;
+        Window current;
+        qint64 lateThresholdNs = 0;
+        bool measureGaps = false;
+    };
+
     void reconnect();
-    void onSinkFrame();
-    void onFrameSwapped();
     void publish();
 
     QPointer<QVideoSink> m_videoSink;
@@ -87,14 +102,8 @@ private:
     bool m_playing = false;
 
     QTimer m_publishTimer;
-    QElapsedTimer m_clock;
     QElapsedTimer m_windowClock;
-
-    // Guarded by m_mutex: written from the decoder/render threads, read on the GUI thread.
-    QMutex m_mutex;
-    Window m_current;
-    qint64 m_lateThresholdNs = 0;
-    bool m_measureGaps = false;
+    const std::shared_ptr<Shared> m_shared = std::make_shared<Shared>();
 
     double m_sinkFps = 0;
     double m_swapFps = 0;

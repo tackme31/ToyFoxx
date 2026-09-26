@@ -9,7 +9,7 @@ using namespace std::chrono_literals;
 PlaybackMonitor::PlaybackMonitor(QObject *parent)
     : QObject(parent)
 {
-    m_clock.start();
+    m_shared->clock.start();
     m_publishTimer.setInterval(500ms);
     connect(&m_publishTimer, &QTimer::timeout, this, &PlaybackMonitor::publish);
 }
@@ -53,10 +53,10 @@ void PlaybackMonitor::setExpectedFps(double fps)
         return;
     m_expectedFps = fps;
     {
-        QMutexLocker lock(&m_mutex);
+        QMutexLocker lock(&m_shared->mutex);
         // A frame arriving more than 1.5 intervals after the previous one means at least one
         // frame slot was missed.
-        m_lateThresholdNs = fps > 0 ? qint64(1.5e9 / fps) : 0;
+        m_shared->lateThresholdNs = fps > 0 ? qint64(1.5e9 / fps) : 0;
     }
     emit expectedFpsChanged();
 }
@@ -67,9 +67,9 @@ void PlaybackMonitor::setPlaying(bool playing)
         return;
     m_playing = playing;
     {
-        QMutexLocker lock(&m_mutex);
-        m_measureGaps = playing;
-        m_current.lastSinkNs = -1;
+        QMutexLocker lock(&m_shared->mutex);
+        m_shared->measureGaps = playing;
+        m_shared->current.lastSinkNs = -1;
     }
     emit playingChanged();
 }
@@ -77,8 +77,8 @@ void PlaybackMonitor::setPlaying(bool playing)
 void PlaybackMonitor::reset()
 {
     {
-        QMutexLocker lock(&m_mutex);
-        m_current = {};
+        QMutexLocker lock(&m_shared->mutex);
+        m_shared->current = {};
     }
     m_windowClock.restart();
     m_totalLateFrames = 0;
@@ -99,44 +99,46 @@ void PlaybackMonitor::reconnect()
     // Direct connections: the slots run on the emitting thread, so no per-frame event is queued
     // to the GUI thread.
     if (m_videoSink)
-        m_sinkConnection = connect(m_videoSink, &QVideoSink::videoFrameChanged, this,
-                                   &PlaybackMonitor::onSinkFrame, Qt::DirectConnection);
+        m_sinkConnection = connect(
+            m_videoSink, &QVideoSink::videoFrameChanged, this,
+            [shared = m_shared] { shared->onSinkFrame(); }, Qt::DirectConnection);
     if (m_window)
-        m_swapConnection = connect(m_window, &QQuickWindow::frameSwapped, this,
-                                   &PlaybackMonitor::onFrameSwapped, Qt::DirectConnection);
+        m_swapConnection = connect(
+            m_window, &QQuickWindow::frameSwapped, this,
+            [shared = m_shared] { shared->onFrameSwapped(); }, Qt::DirectConnection);
     reset();
     m_publishTimer.start();
 }
 
-void PlaybackMonitor::onSinkFrame()
+void PlaybackMonitor::Shared::onSinkFrame()
 {
-    const qint64 now = m_clock.nsecsElapsed();
-    QMutexLocker lock(&m_mutex);
-    ++m_current.sinkFrames;
-    if (m_measureGaps && m_current.lastSinkNs >= 0) {
-        const qint64 gap = now - m_current.lastSinkNs;
-        m_current.maxGapNs = std::max(m_current.maxGapNs, gap);
-        if (m_lateThresholdNs > 0 && gap > m_lateThresholdNs)
-            ++m_current.lateFrames;
+    const qint64 now = clock.nsecsElapsed();
+    QMutexLocker lock(&mutex);
+    ++current.sinkFrames;
+    if (measureGaps && current.lastSinkNs >= 0) {
+        const qint64 gap = now - current.lastSinkNs;
+        current.maxGapNs = std::max(current.maxGapNs, gap);
+        if (lateThresholdNs > 0 && gap > lateThresholdNs)
+            ++current.lateFrames;
     }
-    m_current.lastSinkNs = now;
+    current.lastSinkNs = now;
 }
 
-void PlaybackMonitor::onFrameSwapped()
+void PlaybackMonitor::Shared::onFrameSwapped()
 {
-    QMutexLocker lock(&m_mutex);
-    ++m_current.swaps;
+    QMutexLocker lock(&mutex);
+    ++current.swaps;
 }
 
 void PlaybackMonitor::publish()
 {
     Window snapshot;
     {
-        QMutexLocker lock(&m_mutex);
-        snapshot = m_current;
-        m_current = {};
+        QMutexLocker lock(&m_shared->mutex);
+        snapshot = m_shared->current;
+        m_shared->current = {};
         // Keep the last timestamp so the gap across the window boundary still counts.
-        m_current.lastSinkNs = snapshot.lastSinkNs;
+        m_shared->current.lastSinkNs = snapshot.lastSinkNs;
     }
     const double seconds = std::max(m_windowClock.restart(), qint64(1)) / 1000.0;
 
