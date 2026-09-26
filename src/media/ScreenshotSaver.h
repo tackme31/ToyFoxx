@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QQmlEngine>
 
+class QDateTime;
 class QVideoSink;
 
 namespace toyfoxx {

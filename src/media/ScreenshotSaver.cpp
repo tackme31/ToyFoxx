@@ -1,5 +1,6 @@
 #include "ScreenshotSaver.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QImage>
@@ -56,12 +57,18 @@ void ScreenshotSaver::save(QVideoSink *sink, const QString &title)
             error = tr("Could not create %1.").arg(QDir::toNativeSeparators(directory));
         else if (!image.save(filePath, "PNG"))
             error = tr("Could not write %1.").arg(QDir::toNativeSeparators(filePath));
-        QMetaObject::invokeMethod(
-            self, [self, filePath, error] {
-                if (self)
-                    self->finish(filePath, error);
-            },
-            Qt::QueuedConnection);
+        // Posted via the application, not via the saver: turning the QPointer into a context here
+        // would race with the saver's destruction on the GUI thread. The QPointer is checked on
+        // the GUI thread instead. instance() is already null while ~QCoreApplication drains the
+        // global pool, and the application object is not freed until that drain returns.
+        if (QCoreApplication *app = QCoreApplication::instance()) {
+            QMetaObject::invokeMethod(
+                app, [self, filePath, error] {
+                    if (self)
+                        self->finish(filePath, error);
+                },
+                Qt::QueuedConnection);
+        }
     });
 }
 
