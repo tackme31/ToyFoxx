@@ -5,6 +5,14 @@ project(ToyFoxx
     LANGUAGES CXX
 )
 
+# The distribution is a zip you unpack and double-click: the exe, the DLLs and the notices all at
+# its root. The Qt deploy script reads this through QT_DEPLOY_BIN_DIR, so it flattens Qt's half
+# too. Must precede qt_standard_project_setup(), whose GNUInstallDirs only fills in defaults, and
+# must not be a cache variable, which an earlier configure's "bin" would beat.
+if(WIN32)
+    set(CMAKE_INSTALL_BINDIR ".")
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -98,3 +106,36 @@ target_link_libraries(toyfoxx
         QWindowKit::Quick
         shell32
 )
+
+# ---------------------------------------------------------------- package
+# scripts/package.ps1 drives this; a plain `cmake --build` runs none of it.
+install(TARGETS toyfoxx
+    BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES LICENSE THIRD-PARTY-NOTICES.txt DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# qmltooling holds the QML debugger plugins, which a release has no use for; one of them pulls in
+# Qt6Quick3DUtils.dll, which is GPLv3-only and would not fit an MIT distribution under the LGPL.
+qt_generate_deploy_qml_app_script(
+    TARGET toyfoxx
+    OUTPUT_SCRIPT TOYFOXX_DEPLOY_SCRIPT
+    NO_TRANSLATIONS
+    NO_COMPILER_RUNTIME
+    EXCLUDE_PLUGIN_TYPES qmltooling)
+install(SCRIPT ${TOYFOXX_DEPLOY_SCRIPT})
+
+# windeployqt finds the MSVC redistributable only through %VCINSTALLDIR%, which an ordinary shell
+# does not set, and would then ship none; this module uses the toolchain CMake configured with.
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
+include(InstallRequiredSystemLibraries)
+
+# CPack captures its variables at include() time, so this stays last.
+set(CPACK_GENERATOR ZIP)
+set(CPACK_PACKAGE_NAME ToyFoxx)
+set(CPACK_PACKAGE_VENDOR "Takumi Yamada")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A tiny media player")
+set(CPACK_PACKAGE_FILE_NAME "ToyFoxx-${PROJECT_VERSION}-win64")
+set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/package")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_VERBATIM_VARIABLES ON)
+include(CPack)
