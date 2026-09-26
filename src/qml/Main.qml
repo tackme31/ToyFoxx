@@ -160,10 +160,15 @@ ApplicationWindow {
         visible: opacity > 0
         onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()
-        // Leaving the window across the panel drops the window hover while the panel is still
-        // hovered, so the exit has to be re-checked once the panel lets go.
+        // The idle timer may have fired, and been declined, while the panel was busy. Re-arm it,
+        // or hide at once if the cursor already left the window across the panel (the window
+        // hover drops before the panel's does).
         onBusyChanged: {
-            if (!busy && !windowHover.hovered)
+            if (busy)
+                return;
+            if (windowHover.hovered)
+                idleTimer.restart();
+            else
                 root.hideControls();
         }
 
