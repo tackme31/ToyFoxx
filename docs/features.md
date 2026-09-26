@@ -63,6 +63,17 @@ ToyFoxx:
 - アプリアイコンは `resources/icons/toyfoxx.svg`（原本）から書き出した `toyfoxx.ico` を
   `resources/toyfoxx.rc` の `IDI_ICON1` として exe に埋め込む。Qt は Windows でこれをウィンドウと
   タスクバーのアイコンにも使う。SVG を直したら `.ico` も書き出し直すこと（16〜64px と 256px を同梱）。
+  書き出しは ImageMagick（librsvg 付きの Windows 版）で、各サイズを 4 倍密度で描いて縮小する:
+  ```
+  for s in 16 20 24 32 40 48 64 256; do
+    magick -background none -density $((96*s/256*4)) resources/icons/toyfoxx.svg -resize ${s}x${s} $s.png
+  done
+  magick 16.png 20.png 24.png 32.png 40.png 48.png 64.png 256.png -depth 8 resources/icons/toyfoxx.ico
+  ```
+- アイコンの意匠（2026-09-27 決定）: 折り紙風の狐の横顔で、外形がそのまま再生ボタン ▶ の三角形になる。
+  右上の余白は半透明のオレンジで埋める。スチールブルー（`#3A6585`）の円に、狐を 80% で置く。
+  三角形は外接矩形ではなく重心が中央よりわずかに右に来る位置に置き、見た目の中心を揃えている。
+  正面顔・背景なし・角丸四角・ネイビーほか 8 色も比較したうえでの選択。Inkscape での微調整は SVG に反映済み。
 - Qt Multimedia の初期化は不要（FFmpeg は Qt に同梱）。`QGuiApplication` を**メインスレッドで最初に**
   生成すること（Windows の COM/STA 初期化要件）。
 
@@ -559,4 +570,11 @@ ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から�
 - 自動非表示は、Qt Quick が静止カーソル位置で合成ホバーを毎フレーム配り直すため、`HoverHandler.point` の
   変化ではなく 1px 以上の実移動だけを操作とみなしている（`WindowChrome.qml`）。
 - ファイルダイアログは削除した。必要になれば `Ctrl`+`O` のショートカットだけで復活させる案がある（未依頼）。
-- 次の着手候補: **4K 実測** → F-01 の残り。
+- **リリース準備（2026-09-27）**: ライセンスは MIT（`LICENSE`）。配布 zip は `scripts/package.ps1`、
+  公開は `/release` スキル（`.claude/skills/release/SKILL.md`）。初回は `CMakeLists.txt` の 0.1.0 を
+  そのまま出す予定で、**まだ一度もリリースしていない**（タグ無し、`master` は未更新）。ユーザーが
+  しばらく自分で使ってから `/release` を打つ。
+  - zip（約 55 MB）には、使っていない Controls スタイル（Material / Universal / Fusion / Imagine）、
+    `Qt6Pdf` と `qpdf`、`opengl32sw.dll`、WMF の `windowsmediaplugin` も入っている。ライセンス上は
+    問題なく、容量を減らしたくなったら `package.ps1` の検査を保ったまま除外を足す。
+- 次の着手候補: **試用のフィードバック** → `/release` → **4K 実測** → F-01 の残り。
