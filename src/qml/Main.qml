@@ -10,6 +10,8 @@ ApplicationWindow {
     property url initialSource
     property int visibilityBeforeFullScreen: Window.Windowed
     property bool controlsShown: true
+    // True while auto-hiding would get in the user's way.
+    readonly property bool controlsBusy: controllerPanel.busy || captionHover.hovered
 
     function openSource(source: url) {
         if (source.toString() === "")
@@ -23,7 +25,7 @@ ApplicationWindow {
     }
 
     function hideControls() {
-        if (!controllerPanel.busy)
+        if (!root.controlsBusy)
             root.controlsShown = false;
     }
 
@@ -45,9 +47,40 @@ ApplicationWindow {
 
     // Shown only after the saved geometry is applied, so the window does not jump on startup.
     Component.onCompleted: {
+        frameless.attach(root, caption, caption.minimizeButton, caption.maximizeButton, caption.closeButton);
         windowGeometry.restore();
+        // Showing the now frameless window hands the native caption to the client area,
+        // synchronously with this assignment, which moves the client rect up by the caption
+        // height. Put the restored geometry straight back, or it drifts on every launch.
+        const restored = Qt.rect(root.x, root.y, root.width, root.height);
         root.visible = true;
+        root.x = restored.x;
+        root.y = restored.y;
+        root.width = restored.width;
+        root.height = restored.height;
         openSource(initialSource);
+    }
+    // The idle timer may have fired, and been declined, while the controls were busy. Re-arm it,
+    // or hide at once if the cursor already left the window across the panel or caption (the
+    // window hover drops before theirs does).
+    onControlsBusyChanged: {
+        if (controlsBusy)
+            return;
+        if (windowHover.hovered)
+            idleTimer.restart();
+        else
+            hideControls();
+    }
+
+    FramelessWindow {
+        id: frameless
+    }
+
+    CaptionHoverTracker {
+        id: captionHover
+
+        window: root
+        onMoved: root.revealControls()
     }
 
     MediaPlayer {
@@ -168,17 +201,6 @@ ApplicationWindow {
         visible: opacity > 0
         onOpenRequested: fileDialog.open()
         onFullScreenRequested: root.toggleFullScreen()
-        // The idle timer may have fired, and been declined, while the panel was busy. Re-arm it,
-        // or hide at once if the cursor already left the window across the panel (the window
-        // hover drops before the panel's does).
-        onBusyChanged: {
-            if (busy)
-                return;
-            if (windowHover.hovered)
-                idleTimer.restart();
-            else
-                root.hideControls();
-        }
 
         // Keyed on the Behavior's own target so the duration is settled before the animation
         // starts, whatever order the bindings on controlsShown re-evaluate in.
@@ -191,11 +213,31 @@ ApplicationWindow {
         }
     }
 
+    CaptionBar {
+        id: caption
+
+        targetWindow: root
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        opacity: root.controlsShown ? 1 : 0
+        // Hidden in full screen, where there is no window to move or resize.
+        visible: opacity > 0 && root.visibility !== Window.FullScreen
+
+        Behavior on opacity {
+            id: captionFade
+
+            NumberAnimation {
+                duration: captionFade.targetValue > 0 ? 100 : 300
+            }
+        }
+    }
+
     PlaybackDiagnostics {
         id: diagnostics
 
         x: 12
-        y: 12
+        y: caption.height + 12
         visible: false
         player: player
         videoOutput: videoSurface.videoOutput

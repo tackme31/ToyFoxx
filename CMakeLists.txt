@@ -8,9 +8,19 @@ project(ToyFoxx
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.11 REQUIRED COMPONENTS Quick QuickControls2 Multimedia)
+# Gui: QWindowKit links Qt's Core/Gui/Quick private modules.
+find_package(Qt6 6.11 REQUIRED COMPONENTS Gui Quick QuickControls2 Multimedia)
 
 qt_standard_project_setup(REQUIRES 6.11)
+
+# QWindowKit (submodule, pinned to a release tag): removes the native caption while keeping the
+# real Win32 frame behaviour -- Snap Layout flyout, DWM animations, shadow, rounded corners.
+# Static, so no extra DLL has to be deployed.
+set(QWINDOWKIT_BUILD_QUICK   ON  CACHE BOOL "" FORCE)
+set(QWINDOWKIT_BUILD_WIDGETS OFF CACHE BOOL "" FORCE)
+set(QWINDOWKIT_BUILD_STATIC  ON  CACHE BOOL "" FORCE)
+set(QWINDOWKIT_INSTALL       OFF CACHE BOOL "" FORCE)
+add_subdirectory(third_party/qwindowkit)
 
 qt_add_executable(toyfoxx
     src/main.cpp
@@ -36,10 +46,15 @@ qt_add_qml_module(toyfoxx
         src/media/PlaybackMonitor.h
         src/media/ScreenshotSaver.cpp
         src/media/ScreenshotSaver.h
+        src/platform/CaptionHoverTracker.cpp
+        src/platform/CaptionHoverTracker.h
         src/platform/ShellIntegration.cpp
+        src/platform/FramelessWindow.cpp
+        src/platform/FramelessWindow.h
         src/platform/ShellIntegration.h
     QML_FILES
         src/qml/Main.qml
+        src/qml/CaptionBar.qml
         src/qml/ControllerPanel.qml
         src/qml/KeyboardShortcuts.qml
         src/qml/SeekBar.qml
@@ -71,5 +86,6 @@ target_link_libraries(toyfoxx
         Qt6::Quick
         Qt6::QuickControls2
         Qt6::Multimedia
+        QWindowKit::Quick
         shell32
 )
