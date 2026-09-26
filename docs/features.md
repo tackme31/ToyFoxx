@@ -40,7 +40,7 @@ ToyBoxx の挙動は「仕様の出典」として扱う。バグや WPF 固有�
 | F-20 | 設定の永続化 | P3 | 未 |
 | F-21 | テーマ（Dark / Light / HighContrast） | P3 | 未 |
 | F-22 | 全画面中のスリープ抑止 | P3 | 未 |
-| F-23 | カスタムタイトルバー | P3 | 未 |
+| F-23 | カスタムタイトルバー（映像をタイトルバーの下まで広げる） | P2 | 未（方針決定済み。下記） |
 | F-24 | エラー表示 | P3 | 未 |
 
 推奨実装順: **F-01〜F-09 → F-10〜F-11 → F-12〜F-15 → F-16〜F-18 → F-19〜F-24**
@@ -354,10 +354,41 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 
 ### F-23 カスタムタイトルバー
 
-- ToyBoxx は WPF-UI の `TitleBar` を映像の上に重ね、アイコンとタイトルを表示する
-  （ウィンドウ枠は Fluent のもの）。
-- ToyFoxx の第 1 段階では**OS 標準のウィンドウ枠で十分**。フレームレス化と自前タイトルバーは
-  後回しにする。全画面時はいずれにせよ非表示。
+ToyBoxx:
+- `FluentWindow` のクライアント領域がタイトルバーの位置まで広がっており、映像はウィンドウの最上端から
+  表示される。WPF-UI の `TitleBar`（アイコン + タイトル + 最小化 / 最大化 / 閉じる）はその上に
+  **重ねて**描画される（`MainWindow.xaml`、`Grid` の最後の子）。
+- 自動非表示の対象はコントローラーパネルだけで、**タイトルバーは常に表示**されている
+  （`MainWindow.xaml.cs` のアニメーションのターゲットは `ControllerPanel` のみ）。
+
+ToyFoxx（2026-09-27 に要望。当初の「OS 標準の枠で十分」から方針変更）:
+- **QWindowKit**（Apache-2.0、`QWindowKit::Quick`）でネイティブのキャプションを外し、クライアント領域を
+  ウィンドウ上端まで広げる。映像（`VideoSurface`）はその全面に敷き、自前の `CaptionBar.qml`
+  （アイコン・タイトル・システムボタン 3 つ）を映像の上に重ねる。
+- 参考実装: `../MegaExplorer` の Phase 17a（`qml/components/CaptionBar.qml`、`qml/Main.qml`、
+  `docs/investigations/STUDY_TITLEBAR_TABS.md`、`docs/PROGRESS.md` の Phase 17a 節）。
+  素の `Qt.FramelessWindowHint` + `startSystemMove` では、スナップレイアウトのフライアウト・DWM の
+  最小化アニメーション・影・角丸・8 方向リサイズが失われるため、QWindowKit を選んでいる。
+- MegaExplorer で踏んだ点（そのまま当てはまる）:
+  - `third_party/qwindowkit` にサブモジュールとしてタグ固定（1.5.0）。`BUILD_QUICK=ON` /
+    `BUILD_WIDGETS=OFF` / `BUILD_STATIC=ON` / `INSTALL=OFF`。入れ子のサブモジュールがあるので
+    `--recursive` が必要。Qt の private モジュールに依存する。
+  - QML 型は `QWK::registerTypes` ではなく `QML_FOREIGN` のヘッダで `ToyFoxx` モジュールに登録し、
+    `qmllint` / `qmlcachegen` から見えるようにする。
+  - `setTitleBar` / `setSystemButton` は `setup()` より後に呼ぶ必要がある（順序を誤るとクラッシュ）。
+  - 表示した瞬間にキャプションの高さ（約 31px）ぶんウィンドウが伸びる。F-20 でサイズを保存すると
+    起動のたびに大きくなるので、表示直後にサイズを書き戻す。
+  - システムボタンは `setSystemButton` で登録しないとスナップレイアウトが出ない。
+- ToyFoxx 固有の検討事項:
+  - **性能の確認が必須**: フレームレス化の前後で、`QSG_INFO` の D3D11 + FLIP_\* スワップチェーンが
+    維持されていること、全画面 4K60 のフレーム時間が悪化しないことを確かめる（Performance rules 7）。
+  - 全画面（`Window.FullScreen`）との組み合わせ。QWindowKit 下で全画面の出入りとタスクバーの
+    扱いが正しいか確認する。全画面中はキャプションを出さない。
+  - タイトルバーを常時表示にするか（ToyBoxx）、F-10 の自動非表示にパネルと一緒に含めるか。
+    映像への重なりを考えると後者が自然だが挙動差になる。**未決**。
+  - キャプション部分は OS がドラッグ移動・ダブルクリック最大化を処理する。映像上のダブルクリック
+    （全画面トグル）とは領域で住み分ける。
+  - アイコン素材（§5）が必要。
 
 ### F-24 エラー表示
 
@@ -392,6 +423,7 @@ ToyFoxx では `QSettings`（C++）か `QtCore` の `Settings`（QML）で保持
 - スリープ抑止の条件を「全画面中」から「再生中」に変えるか。
 - `CanPause` / `IsSeeking` / `IsChanging` に相当する状態を QML 側でどこまで作り込むか。
 - HighContrast テーマを実装するか。
+- F-23 のタイトルバーを常時表示にするか、F-10 の自動非表示に含めるか。
 
 ## 5. 人間側の作業待ち
 
