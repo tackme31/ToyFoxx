@@ -122,6 +122,14 @@ ApplicationWindow {
         onFailed: message => chrome.toast.show(qsTr("Screenshot failed"), message, null)
     }
 
+    SegmentExport {
+        id: segmentExport
+
+        player: player
+        segmentLoop: segmentLoop
+        toast: chrome.toast
+    }
+
     VideoSurface {
         id: videoSurface
 
@@ -154,6 +162,7 @@ ApplicationWindow {
         player: player
         audioOutput: audioOutput
         segmentLoop: segmentLoop
+        segmentExporter: segmentExport.exporter
         onFullScreenRequested: root.toggleFullScreen()
     }
 
@@ -174,5 +183,6 @@ ApplicationWindow {
         videoSurface: videoSurface
         diagnostics: diagnostics
         onScreenshotRequested: screenshotSaver.save(videoSurface.videoOutput.videoSink, MediaSource.displayTitle(player.source))
+        onSegmentExportRequested: segmentExport.start()
     }
 }

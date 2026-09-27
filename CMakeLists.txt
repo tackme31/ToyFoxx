@@ -30,6 +30,8 @@ set(QWINDOWKIT_BUILD_STATIC  ON  CACHE BOOL "" FORCE)
 set(QWINDOWKIT_INSTALL       OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/qwindowkit)
 
+include(cmake/FFmpeg.cmake)
+
 # The .rc embeds resources/icons/toyfoxx.ico as IDI_ICON1, which Qt also uses as the window and
 # taskbar icon. The .ico is rendered from resources/icons/toyfoxx.svg; regenerate it when the SVG changes.
 qt_add_executable(toyfoxx
@@ -59,6 +61,10 @@ qt_add_qml_module(toyfoxx
         src/media/PlaybackMonitor.h
         src/media/ScreenshotSaver.cpp
         src/media/ScreenshotSaver.h
+        src/media/SegmentExporter.cpp
+        src/media/SegmentExporter.h
+        src/media/SegmentTranscoder.cpp
+        src/media/SegmentTranscoder.h
         src/platform/CaptionHoverTracker.cpp
         src/platform/CaptionHoverTracker.h
         src/platform/ShellIntegration.cpp
@@ -76,6 +82,8 @@ qt_add_qml_module(toyfoxx
         src/qml/SeekBar.qml
         src/qml/SeekBarPreview.qml
         src/qml/SegmentLoop.qml
+        src/qml/SegmentExport.qml
+        src/qml/ExportProgress.qml
         src/qml/TimeFormat.js
         src/qml/Toast.qml
         src/qml/SpeedButton.qml
@@ -106,6 +114,7 @@ target_link_libraries(toyfoxx
         Qt6::QuickControls2
         Qt6::Multimedia
         QWindowKit::Quick
+        toyfoxx_ffmpeg
         shell32
 )
 

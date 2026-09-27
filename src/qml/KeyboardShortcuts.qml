@@ -11,6 +11,7 @@ Item {
     required property Item diagnostics
 
     signal screenshotRequested
+    signal segmentExportRequested
 
     function seekBy(deltaMs: int) {
         if (controllerPanel.isOpen && player.seekable)
@@ -49,6 +50,12 @@ Item {
         sequence: "S"
         enabled: shortcuts.controllerPanel.isOpen && shortcuts.player.hasVideo
         onActivated: shortcuts.screenshotRequested()
+    }
+
+    Shortcut {
+        sequence: "T"
+        enabled: shortcuts.controllerPanel.isOpen && shortcuts.player.hasVideo
+        onActivated: shortcuts.segmentExportRequested()
     }
 
     Shortcut {

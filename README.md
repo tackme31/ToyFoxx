@@ -11,6 +11,7 @@ Limited, buggy, and uncustomizable, but perfect for me.
 
 - 🖼️ Preview thumbnails when hovering over the seek bar
 - 🔁 Loop playback within a selected range
+  - ✂️ Export the selected range to the Videos folder (`T`)
 - 🔍 Transform media
   - Zoom in and out (`Ctrl` + Mouse Wheel)
   - Pan (Drag)

@@ -31,9 +31,14 @@ options that were considered for WPF.
   `ninja`, or an old `cmake` may appear earlier on `PATH` — do not use them. Prefer the CMake and Ninja shipped
   with the Qt installation (`Tools/CMake_64`, `Tools/Ninja`), or `qt-cmake`, which pins the correct toolchain
   automatically.
-- **FFmpeg is not a build dependency and must not be vendored.** Qt's FFmpeg media backend ships with Qt
+- **FFmpeg must not be vendored.** Qt's FFmpeg media backend ships with Qt
   (`plugins/multimedia/ffmpegmediaplugin.dll` plus the `av*` DLLs) and `windeployqt` deploys it. There is no
-  equivalent of ToyBoxx's `requirements.ps1`.
+  equivalent of ToyBoxx's `requirements.ps1`. The one exception is the A-B segment export (F-25), which calls
+  FFmpeg directly: `cmake/FFmpeg.cmake` fetches FFmpeg's public headers at configure time (the tag must match
+  the FFmpeg that Qt ships; Qt 6.11.1 ships 7.1.3), generates import libraries from Qt's own DLLs, and
+  delay-loads them. No FFmpeg binary or source is committed or shipped by us. After bumping Qt, check
+  `avformat_configuration()` / `av_version_info()` of Qt's DLL and move the tag with it; configure fails if
+  the DLL major versions no longer match.
 
 Do not hardcode absolute Qt or FFmpeg paths anywhere in the repository. Use `CMAKE_PREFIX_PATH`, `qt-cmake`, or
 CMake presets and let each developer point at their own Qt installation.
@@ -127,7 +132,7 @@ tests/                 # Qt Quick Test
 ## Feature parity target
 
 Carried over from ToyBoxx. This is the summary; **`docs/features.md` holds the full per-feature spec** (IDs
-F-01 to F-24, priorities, ToyBoxx behaviour, and intentional differences). Keep both in sync as features land.
+F-01 to F-25, priorities, ToyBoxx behaviour, and intentional differences). Keep both in sync as features land.
 
 | Feature | ToyFoxx approach |
 |---|---|
@@ -139,6 +144,7 @@ F-01 to F-24, priorities, ToyBoxx behaviour, and intentional differences). Keep 
 | Playback speed | `playbackRate`, with `pitchCompensation` (Qt 6.10+) replacing ToyBoxx's SoundTouch dependency |
 | Step forward one frame | No `QMediaPlayer` API for this. Pause, then advance `position` by `1000 / VideoFrameRate` taken from `metaData`. Accuracy is bounded by seek granularity — document that caveat rather than hiding it |
 | A-B segment loop | Watch `onPositionChanged` and seek back at the endpoint. Resolution is bounded by the position notify rate; do not busy-poll |
+| Export the A-B segment (`T`, ToyFoxx only) | C++ `SegmentExporter` on the thread pool, calling Qt's FFmpeg DLLs: decode from the key frame before A, re-encode A-B with Media Foundation's H.264 (HEVC past H.264's size limit), copy or AAC-encode the audio, write an MP4 to the Videos folder. Re-encodes so the cut is exact; not lossless |
 | Screenshot (`S`) | Read `videoOutput.videoSink.videoFrame` and call `QVideoFrame::toImage()` **on keypress only** — one readback at source resolution. Never a per-frame grab, and not `grabToImage`, which captures the composited and transformed item instead |
 | Seek-bar thumbnail preview | A second, silent `MediaPlayer` kept paused and rendering into a small `VideoOutput` in the preview box, opened on first hover and seeking after a 250 ms rest. Frames stay on the GPU; do not grab them to images, which reads a full-resolution frame back per hover |
 | Themes (Dark / Light / High Contrast) | Not carried over: dark only, no theme switching |

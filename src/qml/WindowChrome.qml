@@ -12,6 +12,7 @@ Item {
     required property MediaPlayer player
     required property AudioOutput audioOutput
     required property SegmentLoop segmentLoop
+    required property SegmentExporter segmentExporter
     property bool shown: true
     // True while auto-hiding would get in the user's way.
     readonly property bool busy: controllerPanel.busy || captionHover.hovered
@@ -136,6 +137,16 @@ Item {
         anchors.bottom: parent.bottom
         anchors.rightMargin: 12
         // Above the panel's area whether or not the panel is showing, so it never jumps.
+        anchors.bottomMargin: controllerPanel.height + 12 + (exportProgress.visible ? exportProgress.height + 8 : 0)
+    }
+
+    ExportProgress {
+        id: exportProgress
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 12
         anchors.bottomMargin: controllerPanel.height + 12
+        exporter: chrome.segmentExporter
     }
 }
