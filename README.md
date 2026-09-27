@@ -10,7 +10,7 @@ Limited, buggy, and uncustomizable, but perfect for me.
 ## Features
 
 - 🖼️ Preview thumbnails when hovering over the seek bar
-- 🔁 Loop playback within a selected range
+- 🔁 Loop playback within a selected range (`I` to set A, then B; `Ctrl` + `I` to undo the last point)
   - ✂️ Export the selected range to the Videos folder (`T`)
 - 🔍 Transform media
   - Zoom in and out (`Ctrl` + Mouse Wheel)
@@ -19,10 +19,11 @@ Limited, buggy, and uncustomizable, but perfect for me.
   - Display at original size (`F`)
   - Reset view to default (`Middle click`)
 - ⚡ Adjust playback speed
-- ⏭️ Step forward one frame
+- ⏭️ Step forward one frame (`N`)
 - 📸 Capture the current frame (`S`)
 - ⏱️ Jump backward or forward 5 seconds (`Left` / `Right`)
-- 🖥️ Toggle fullscreen (`Double click`)
+- 🔇 Toggle mute (`M`)
+- 🖥️ Toggle fullscreen (`Double click`, `Esc` to exit)
 
 ## Build
 This software is only supported on Windows x64. It requires Qt 6.11 or newer (MSVC 2022 x64 build, with the Multimedia and Svg modules) and the MSVC 2022 x64 toolchain.

@@ -8,8 +8,11 @@ Item {
     required property MediaPlayer player
     required property ControllerPanel controllerPanel
     required property VideoSurface videoSurface
+    required property SegmentLoop segmentLoop
     required property Item diagnostics
+    property bool fullScreen: false
 
+    signal fullScreenRequested
     signal screenshotRequested
     signal segmentExportRequested
 
@@ -32,6 +35,36 @@ Item {
     Shortcut {
         sequence: "Right"
         onActivated: shortcuts.seekBy(5000)
+    }
+
+    Shortcut {
+        sequence: "N"
+        enabled: shortcuts.controllerPanel.isOpen && shortcuts.player.seekable
+                 && shortcuts.player.mediaStatus !== MediaPlayer.EndOfMedia
+        onActivated: shortcuts.controllerPanel.stepFrame()
+    }
+
+    Shortcut {
+        sequence: "M"
+        onActivated: shortcuts.player.audioOutput.muted = !shortcuts.player.audioOutput.muted
+    }
+
+    Shortcut {
+        sequence: "I"
+        enabled: shortcuts.controllerPanel.isOpen
+        onActivated: shortcuts.segmentLoop.advance()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+I"
+        enabled: shortcuts.controllerPanel.isOpen
+        onActivated: shortcuts.segmentLoop.retreat()
+    }
+
+    Shortcut {
+        sequence: "Esc"
+        enabled: shortcuts.fullScreen
+        onActivated: shortcuts.fullScreenRequested()
     }
 
     Shortcut {

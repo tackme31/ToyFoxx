@@ -1,7 +1,8 @@
 import QtQuick
 import QtMultimedia
 
-// A-B segment loop state. advance() walks it through unset -> start set -> active -> unset.
+// A-B segment loop state. advance() walks it through unset -> start set -> active -> unset;
+// retreat() steps back one stage, so the end point can be set again without losing the start.
 QtObject {
     id: segmentLoop
 
@@ -19,6 +20,13 @@ QtObject {
             startMs = position;
         else if (startMs < position)
             endMs = position;
+    }
+
+    function retreat() {
+        if (active)
+            endMs = -1;
+        else
+            startMs = -1;
     }
 
     function clear() {

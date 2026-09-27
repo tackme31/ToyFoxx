@@ -181,7 +181,10 @@ ApplicationWindow {
         player: player
         controllerPanel: chrome.controllerPanel
         videoSurface: videoSurface
+        segmentLoop: segmentLoop
         diagnostics: diagnostics
+        fullScreen: root.visibility === Window.FullScreen
+        onFullScreenRequested: root.toggleFullScreen()
         onScreenshotRequested: screenshotSaver.save(videoSurface.videoOutput.videoSink, MediaSource.displayTitle(player.source))
         onSegmentExportRequested: segmentExport.start()
     }
