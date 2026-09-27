@@ -78,7 +78,9 @@ IconButton {
                 }
             }
 
-            // AudioOutput.volume is linear, as in ToyBoxx.
+            // AudioOutput.volume is a linear gain, which crowds the audible change into the
+            // bottom of a linear slider. The slider moves the cube root instead (about -18 dB at
+            // half travel), the curve PulseAudio and mpv use; the stored volume stays linear.
             Slider {
                 id: volumeSlider
 
@@ -86,10 +88,10 @@ IconButton {
                 orientation: Qt.Vertical
                 from: 0
                 to: 1
-                value: volumeButton.audioOutput.volume
+                value: Math.cbrt(volumeButton.audioOutput.volume)
                 enabled: !volumeButton.audioOutput.muted
                 focusPolicy: Qt.NoFocus
-                onMoved: volumeButton.audioOutput.volume = value
+                onMoved: volumeButton.audioOutput.volume = value * value * value
             }
         }
     }
