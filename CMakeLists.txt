@@ -116,12 +116,15 @@ install(FILES LICENSE THIRD-PARTY-NOTICES.txt DESTINATION ${CMAKE_INSTALL_BINDIR
 
 # qmltooling holds the QML debugger plugins, which a release has no use for; one of them pulls in
 # Qt6Quick3DUtils.dll, which is GPLv3-only and would not fit an MIT distribution under the LGPL.
+# Of the image formats only SVG is read (the caption icon; screenshots are PNG, built into QtGui).
+# Loading the first image loads every deployed format plugin, and qpdf drags in Qt6Pdf.dll.
 qt_generate_deploy_qml_app_script(
     TARGET toyfoxx
     OUTPUT_SCRIPT TOYFOXX_DEPLOY_SCRIPT
     NO_TRANSLATIONS
     NO_COMPILER_RUNTIME
-    EXCLUDE_PLUGIN_TYPES qmltooling)
+    EXCLUDE_PLUGIN_TYPES qmltooling
+    EXCLUDE_PLUGINS qgif qicns qico qjpeg qpdf qtga qtiff qwbmp qwebp)
 install(SCRIPT ${TOYFOXX_DEPLOY_SCRIPT})
 
 # windeployqt finds the MSVC redistributable only through %VCINSTALLDIR%, which an ordinary shell
