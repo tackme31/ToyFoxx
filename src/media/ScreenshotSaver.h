@@ -3,15 +3,7 @@
 #include <QObject>
 #include <QQmlEngine>
 
-class QDateTime;
 class QVideoSink;
-
-namespace toyfoxx {
-
-// "<title>_<yyyyMMddHHmmsszzz>.png" with characters Windows forbids in file names removed.
-QString screenshotFileName(const QString &title, const QDateTime &time);
-
-} // namespace toyfoxx
 
 // Saves the frame currently held by a video sink as a PNG in the Pictures folder, at source
 // resolution and without the view's zoom or rotation.

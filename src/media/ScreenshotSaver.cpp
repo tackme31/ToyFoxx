@@ -1,5 +1,7 @@
 #include "ScreenshotSaver.h"
 
+#include "FileNames.h"
+
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
@@ -9,24 +11,6 @@
 #include <QThreadPool>
 #include <QVideoFrame>
 #include <QVideoSink>
-
-namespace toyfoxx {
-
-QString screenshotFileName(const QString &title, const QDateTime &time)
-{
-    QString name;
-    name.reserve(title.size());
-    for (const QChar c : title) {
-        if (c.unicode() >= 0x20 && !QStringView(u"\\/:*?\"<>|").contains(c))
-            name.append(c);
-    }
-    name = name.trimmed();
-    if (name.isEmpty())
-        name = QStringLiteral("screenshot");
-    return name + u'_' + time.toString(QStringLiteral("yyyyMMddHHmmsszzz")) + QStringLiteral(".png");
-}
-
-} // namespace toyfoxx
 
 void ScreenshotSaver::save(QVideoSink *sink, const QString &title)
 {
@@ -45,8 +29,8 @@ void ScreenshotSaver::save(QVideoSink *sink, const QString &title)
     }
 
     const QString directory = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-    const QString filePath =
-        QDir(directory).filePath(toyfoxx::screenshotFileName(title, QDateTime::currentDateTime()));
+    const QString filePath = QDir(directory).filePath(toyfoxx::timestampedFileName(
+        title, QDateTime::currentDateTime(), QStringLiteral("screenshot"), QStringLiteral(".png")));
 
     m_busy = true;
     emit busyChanged();

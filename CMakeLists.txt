@@ -49,6 +49,8 @@ qt_add_qml_module(toyfoxx
     DEPENDENCIES
         QtMultimedia
     SOURCES
+        src/app/FileNames.cpp
+        src/app/FileNames.h
         src/app/MediaSource.cpp
         src/app/MediaSource.h
         src/app/ScreenGeometry.cpp
