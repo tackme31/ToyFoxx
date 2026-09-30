@@ -1,7 +1,7 @@
 <img src="./resources/icons/toyfoxx.svg" width="100" />
 
 # ToyFoxx - a tiny media player
-Limited, buggy, and uncustomizable, but perfect for me.
+Yet another tiny media player, with a few quality-of-life improvements built in.
 
 ![screenshot](./img/screenshot.png)
 
