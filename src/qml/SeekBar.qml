@@ -10,6 +10,8 @@ Slider {
 
     // Only where a position means something: live streams have no duration to preview.
     readonly property bool previewAvailable: enabled && player.duration > 0
+    // Playback is held while the handle is down, so resting mid-drag does not start playing there.
+    property bool resumeOnRelease: false
 
     // Inverse of markerX: the media position under an x coordinate, clamped to the range.
     function positionAt(x: real): real {
@@ -31,6 +33,16 @@ Slider {
     // Setting position on every move gives a live seek while dragging; the Binding below stops
     // the playback position from fighting the handle until it is released.
     onMoved: player.position = value
+    onPressedChanged: {
+        if (pressed) {
+            resumeOnRelease = player.playbackState === MediaPlayer.PlayingState;
+            if (resumeOnRelease)
+                player.pause();
+        } else if (resumeOnRelease) {
+            resumeOnRelease = false;
+            player.play();
+        }
+    }
 
     Binding {
         seekBar.value: seekBar.player.position
