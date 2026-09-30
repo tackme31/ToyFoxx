@@ -73,13 +73,35 @@ git tag -a vX.Y.Z -m "ToyFoxx X.Y.Z"
 git push origin develop master
 git push origin vX.Y.Z
 gh release create vX.Y.Z --verify-tag --title "vX.Y.Z" \
-    --notes "<1〜2 行>" build-release/package/ToyFoxx-X.Y.Z-win64.zip
+    --notes-file <scratchpad>/notes.md build-release/package/ToyFoxx-X.Y.Z-win64.zip
 git checkout develop
 ```
 
-リリース文は**英語で 1〜2 行**。前のタグからの `git log --oneline` を眺めて、ユーザーに見える
-変化を一言で書く（初回なら "First release." 程度）。内部の変更しかなければ
-"Minor fixes and internal changes." でよい。`--draft` / `--prerelease` は指示されたときだけ。
+リリース文は**英語**で、scratchpad に書いた Markdown を `--notes-file` で渡す（`--notes` に
+複数行を直書きするとシェルの引用で崩れやすい）。前のタグからの `git log` を本文まで見て、
+次の形にする:
+
+```markdown
+<何が入った版かを 1 行で要約>
+
+- Added: <新機能。ショートカットがあれば `T` のように書く>
+- Changed: <既存の動作・見た目の変化>
+- Fixed: <直したバグ。どういう症状だったかを短く>
+
+Windows x64. Unzip anywhere and run `ToyFoxx.exe`.
+```
+
+- 箇条 1 つにつき、ユーザーに見える変化 1 つを 1〜2 文で書く。実装の詳細（使った API、
+  内部構造）までは書かない。
+- 並びは Added → Changed → Fixed。該当が無い種類は省く。
+- 内部だけの変更（リファクタ、ビルド、ドキュメント）は載せない。配布物が小さくなった、起動が
+  速くなったなど利用者に効くものだけ `Changed:` に書く。
+- 既知の不具合があれば、要約の下の箇条のあとに `### Known issues` の箇条で足す。
+- 初回は要約を "First release." にし、箇条は主な機能を並べる。ユーザーに見える変化が無ければ
+  要約 1 行を "Minor fixes and internal changes." にして箇条は省く。
+- `--draft` / `--prerelease` は指示されたときだけ。
+
+出したあとに直すときは `gh release edit vX.Y.Z --notes-file <file>`。
 
 最後に必ず `develop` に戻しておく（作業ブランチは `develop`）。
 
