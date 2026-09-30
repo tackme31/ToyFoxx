@@ -5,7 +5,7 @@ Limited, buggy, and uncustomizable, but perfect for me.
 
 ![screenshot](./img/screenshot.png)
 
-**Note:** This project is the successor to [ToyBoxx](https://github.com/tackme31/ToyBoxx), rewritten from scratch in Qt Quick and C++ for smooth 4K playback.
+**Note:** This project is the successor to [ToyBoxx](https://github.com/tackme31/ToyBoxx), rewritten from scratch in Qt Quick and C++ for better performance.
 
 ## Features
 
